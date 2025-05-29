@@ -44,7 +44,7 @@ def get_signups(request, event_id):
 @api_view(['GET', 'POST'])
 def update_signups(request, event_id):
     try:
-        event = Event.objects.get(eventId=event_id)
+        event = Event.objects.get(id=event_id)
         if(event.signedUp == False):
           event.signUps += 1
           event.signedUp = True
@@ -53,37 +53,22 @@ def update_signups(request, event_id):
           event.signedUp = False
         event.save()
         data = {
-            'id': str(record.id),
-            'title': record.title,
-            'image': record.image,
-            'description': record.description,
-            'location': record.location,
-            'host': record.host,
-            'signups': record.signups,
-            'distance': record.distance,
-            'date': record.date.strftime('%B %d, %Y'),    
-            'time': record.time.strftime('%-I:%M %p'),  
-            'accepted': record.accepted,
+            'id': str(event.id),
+            'title': event.title,
+            'image': event.image,
+            'description': event.description,
+            'location': event.location,
+            'host': event.host,
+            'signups': event.signups,
+            'distance': event.distance,
+            'date': event.date.strftime('%B %d, %Y'),    
+            'time': event.time.strftime('%-I:%M %p'),  
+            'accepted': event.accepted,
         }
         return Response(data, status=status.HTTP_200_OK)
     
     except Event.DoesNotExist:
-        # Optionally create event if it doesn't exist
-        record = Event.objects.create(eventId=event_id, signUps=1)
-        data = {
-            'id': str(record.id),
-            'title': record.title,
-            'image': record.image,
-            'description': record.description,
-            'location': record.location,
-            'host': record.host,
-            'signups': record.signups,
-            'distance': record.distance,
-            'date': record.date.strftime('%B %d, %Y'),    
-            'time': record.time.strftime('%-I:%M %p'),  
-            'accepted': record.accepted,
-        }
-        return Response(data, status=status.HTTP_201_CREATED)
+        return Response(data, status=status.HTTP_400_BAD_REQUEST)
 
 # User sends post request with location
 def get_events(request):
