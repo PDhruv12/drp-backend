@@ -1,6 +1,6 @@
 
 from rest_framework import serializers
-from models import ExampleTableModel
+from .models import ExampleTableModel
 
 class ExampleTableModelSerializer(serializers.ModelSerializer):
     class Meta:

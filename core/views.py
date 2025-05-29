@@ -3,7 +3,7 @@ from django.http import JsonResponse
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
-from models import ExampleTableModel
+from .models import ExampleTableModel
 from serializers import ExampleTableModelSerializer
 
 def my_api_endpoint(request):
@@ -17,7 +17,7 @@ def alive(_):
 # User sends post request with location
 def get_data_from_db_orm(request):
   # This is a placeholder. You need to define YourTableModel in a models.py file.
-  from models import ExampleTableModel # Import your model
+  from .models import ExampleTableModel # Import your model
   
   # Example: Fetch all records
   records = ExampleTableModel.objects.all()
