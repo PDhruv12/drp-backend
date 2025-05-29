@@ -40,4 +40,6 @@ urlpatterns = [
     path('alive', views.alive, name='alive'),
     path('api/data/', views.example_data_view, name='example-data'),
     path('api/getdata/', views.get_data_from_db_orm, name='get-data'),
+    path('event/<int:event_id>/signups/', views.get_signups, name='get_signups'),
+    path('event/<int:event_id>/signups/update/', views.update_signups, name='update_signups'),
 ]
