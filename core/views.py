@@ -60,3 +60,11 @@ def update_signups(request, event_id):
         event = EventSignUpModel.objects.create(eventId=event_id, signUps=1)
         serializer = EventSignUpModelSerializer(event)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+@api_view(['GET', 'POST'])
+def add_events(request):
+  id = request.query_params.get('id')
+  num = request.query_params.get('num')
+  new_record = EventSignUpModel.objects.create(eventId = id, signUps=num, signedUp = False)
+  serializer = EventSignUpModelSerializer(new_record)
+  return Response(serializer.data, status=status.HTTP_201_CREATED)
