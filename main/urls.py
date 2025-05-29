@@ -41,6 +41,7 @@ urlpatterns = [
     path('api/data/', views.example_data_view, name='example-data'),
     path('api/getdata/', views.get_data_from_db_orm, name='get-data'),
     path('event/<int:event_id>/', views.get_signups, name='get_signups'),
+    path('events', views.get_signups, name='events'),
     path('event/<int:event_id>/signups/update/', views.update_signups, name='update_signups'),
     path('events/add/', views.add_events, name='add-data'),
 ]

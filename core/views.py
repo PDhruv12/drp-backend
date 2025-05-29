@@ -61,6 +61,30 @@ def update_signups(request, event_id):
         serializer = EventSerializer(event)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
+# User sends post request with location
+def get_events(request):
+  # This is a placeholder. You need to define YourTableModel in a models.py file.
+  from .models import Event # Import your model
+  # Example: Fetch all records
+  records = Event.objects.all()
+  # Convert queryset to a list of dictionaries
+  data = []
+  for record in records:
+      data.append({
+          'id': str(record.id),
+          'title': record.title,
+          'image': record.image,
+          'description': record.description,
+          'location': record.location,
+          'host': record.host,
+          'signups': record.signups,
+          'distance': record.distance,
+          'date': record.date.strftime('%B %d, %Y'),    
+          'time': record.time.strftime('%-I:%M %p'),  
+          'accepted': record.accepted,
+      })
+  return JsonResponse(data, safe=False)
+
 @api_view(['GET', 'POST'])
 def add_events(request):
     title = request.query_params.get('title')
