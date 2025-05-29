@@ -67,23 +67,8 @@ def get_events(request):
   from .models import Event # Import your model
   # Example: Fetch all records
   records = Event.objects.all()
-  # Convert queryset to a list of dictionaries
-  data = []
-  for record in records:
-      data.append({
-          'id': str(record.id),
-          'title': record.title,
-          'image': record.image,
-          'description': record.description,
-          'location': record.location,
-          'host': record.host,
-          'signups': record.signups,
-          'distance': record.distance,
-          'date': record.date.strftime('%B %d, %Y'),    
-          'time': record.time.strftime('%-I:%M %p'),  
-          'accepted': record.accepted,
-      })
-  return JsonResponse(data, safe=False)
+  serializer = EventSerializer(records, many=True)
+  return Response(serializer.data)
 
 @api_view(['GET', 'POST'])
 def add_events(request):
@@ -133,3 +118,9 @@ def add_events(request):
     
     serializer = EventSerializer(new_event)
     return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+@api_view(['DELETE'])
+def delete_all_events(request):
+    count, _ = Event.objects.all().delete()
+    return Response({'message': f'{count} events deleted.'})
