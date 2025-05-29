@@ -4,7 +4,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 from .models import ExampleTableModel
-from serializers import ExampleTableModelSerializer
+from .serializers import ExampleTableModelSerializer
 
 def my_api_endpoint(request):
   data = {'message': 'Hello from Django!'}
