@@ -68,7 +68,7 @@ def get_events(request):
   # Example: Fetch all records
   records = Event.objects.all()
   serializer = EventSerializer(records, many=True)
-  return Response(serializer.data)
+  return Response(serializer.data, status=status.HTTP_200_OK)
 
 @api_view(['GET', 'POST'])
 def add_events(request):
@@ -118,7 +118,6 @@ def add_events(request):
     
     serializer = EventSerializer(new_event)
     return Response(serializer.data, status=status.HTTP_201_CREATED)
-
 
 @api_view(['DELETE'])
 def delete_all_events(request):
