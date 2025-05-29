@@ -45,12 +45,12 @@ def get_signups(request, event_id):
 def update_signups(request, event_id):
     try:
         event = Event.objects.get(id=event_id)
-        if(event.signedUp == False):
-          event.signUps += 1
-          event.signedUp = True
+        if(event.accepted == False):
+          event.signups += 1
+          event.accepted = True
         else:
-          event.signUps -= 1
-          event.signedUp = False
+          event.signups -= 1
+          event.accepted = False
         event.save()
         data = {
             'id': str(event.id),
