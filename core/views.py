@@ -24,10 +24,6 @@ def get_data_from_db_orm(request):
   
   # Convert queryset to a list of dictionaries
   data = [model_to_dict(record) for record in records]
-  
-  # For now, returning a placeholder as YourTableModel is not fully set up in your current context
-  data = [{'info': 'This endpoint would use Django ORM. Define YourTableModel first.'}]
-  
   return JsonResponse(data, safe=False)
 
 @api_view(['GET', 'POST'])
