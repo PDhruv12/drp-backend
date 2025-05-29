@@ -3,8 +3,8 @@ from django.http import JsonResponse
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
-from .models import ExampleTableModel, EventSignUpModel
-from .serializers import ExampleTableModelSerializer, EventSignUpModelSerializer
+from .models import ExampleTableModel, Event
+from .serializers import ExampleTableModelSerializer, EventSerializer
 
 def my_api_endpoint(request):
   data = {'message': 'Hello from Django!'}
@@ -35,16 +35,16 @@ def example_data_view(request):
 @api_view(['GET'])
 def get_signups(request, event_id):
     try:
-        event = EventSignUpModel.objects.get(eventId=event_id)
-        serializer = EventSignUpModelSerializer(event)
+        event = Event.objects.get(eventId=event_id)
+        serializer = EventSerializer(event)
         return Response(serializer.data, status=status.HTTP_200_OK)
-    except EventSignUpModel.DoesNotExist:
+    except Event.DoesNotExist:
         return Response({'error': 'Event not found'}, status=status.HTTP_404_NOT_FOUND)
 
 @api_view(['GET', 'POST'])
 def update_signups(request, event_id):
     try:
-        event = EventSignUpModel.objects.get(eventId=event_id)
+        event = Event.objects.get(eventId=event_id)
         if(event.signedUp == False):
           event.signUps += 1
           event.signedUp = True
@@ -52,19 +52,60 @@ def update_signups(request, event_id):
           event.signUps -= 1
           event.signedUp = False
         event.save()
-        serializer = EventSignUpModelSerializer(event)
+        serializer = EventSerializer(event)
         return Response(serializer.data, status=status.HTTP_200_OK)
     
-    except EventSignUpModel.DoesNotExist:
+    except Event.DoesNotExist:
         # Optionally create event if it doesn't exist
-        event = EventSignUpModel.objects.create(eventId=event_id, signUps=1)
-        serializer = EventSignUpModelSerializer(event)
+        event = Event.objects.create(eventId=event_id, signUps=1)
+        serializer = EventSerializer(event)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 @api_view(['GET', 'POST'])
 def add_events(request):
-  id = request.query_params.get('id')
-  num = request.query_params.get('num')
-  new_record = EventSignUpModel.objects.create(eventId = id, signUps=num, signedUp = False)
-  serializer = EventSignUpModelSerializer(new_record)
-  return Response(serializer.data, status=status.HTTP_201_CREATED)
+    title = request.query_params.get('title')
+    image = request.query_params.get('image')
+    description = request.query_params.get('description')
+    location = request.query_params.get('location')
+    host = request.query_params.get('host')
+    signups = request.query_params.get('signups', 0)
+    distance = request.query_params.get('distance')
+    date = request.query_params.get('date')
+    time = request.query_params.get('time')
+    accepted = request.query_params.get('accepted', 'false').lower() == 'true'
+
+    # Validate required fields minimally
+    if not all([title, image, description, location, host, distance, date, time]):
+        return Response({'error': 'Missing required fields.'}, status=status.HTTP_400_BAD_REQUEST)
+    
+    # Convert signups and distance to proper types
+    try:
+        signups = int(signups)
+        distance = float(distance)
+    except ValueError:
+        return Response({'error': 'Invalid signups or distance format.'}, status=status.HTTP_400_BAD_REQUEST)
+
+    # Parse date and time fields (assuming 'YYYY-MM-DD' and 'HH:MM[:ss]' format)
+    from datetime import datetime
+    try:
+        date_obj = datetime.strptime(date, '%d-%m-%Y').date()
+        time_obj = datetime.strptime(time, '%H:%M').time()
+    except ValueError:
+        return Response({'error': 'Invalid date or time format. Date format: YYYY-MM-DD, Time format: HH:MM'}, status=status.HTTP_400_BAD_REQUEST)
+
+    # Create the event record
+    new_event = Event.objects.create(
+        title=title,
+        image=image,
+        description=description,
+        location=location,
+        host=host,
+        signups=signups,
+        distance=distance,
+        date=date_obj,
+        time=time_obj,
+        accepted=accepted,
+    )
+    
+    serializer = EventSerializer(new_event)
+    return Response(serializer.data, status=status.HTTP_201_CREATED)

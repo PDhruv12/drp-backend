@@ -1,13 +1,13 @@
 
 from rest_framework import serializers
-from .models import ExampleTableModel, EventSignUpModel
+from .models import ExampleTableModel, Event
 
 class ExampleTableModelSerializer(serializers.ModelSerializer):
     class Meta:
         model = ExampleTableModel
         fields = '__all__' 
 
-class EventSignUpModelSerializer(serializers.ModelSerializer):
+class EventSerializer(serializers.ModelSerializer):
     class Meta:
-        model = EventSignUpModel
+        model = Event
         fields = '__all__'
