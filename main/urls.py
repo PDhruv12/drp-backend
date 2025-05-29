@@ -37,5 +37,6 @@ import core.views as views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/my-endpoint/', views.my_api_endpoint, name='my_endpoint'), # Add this line
-    path('alive', views.alive, name='alive')
+    path('alive', views.alive, name='alive'),
+    path('api/data/', views.example_data_view, name='example-data'),
 ]
