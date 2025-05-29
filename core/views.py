@@ -35,7 +35,7 @@ def example_data_view(request):
 @api_view(['GET'])
 def get_signups(request, event_id):
     try:
-        event = Event.objects.get(eventId=event_id)
+        event = Event.objects.get(id=event_id)
         serializer = EventSerializer(event)
         return Response(serializer.data, status=status.HTTP_200_OK)
     except Event.DoesNotExist:
