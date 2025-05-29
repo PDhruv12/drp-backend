@@ -52,14 +52,38 @@ def update_signups(request, event_id):
           event.signUps -= 1
           event.signedUp = False
         event.save()
-        serializer = EventSerializer(event)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        data = {
+            'id': str(record.id),
+            'title': record.title,
+            'image': record.image,
+            'description': record.description,
+            'location': record.location,
+            'host': record.host,
+            'signups': record.signups,
+            'distance': record.distance,
+            'date': record.date.strftime('%B %d, %Y'),    
+            'time': record.time.strftime('%-I:%M %p'),  
+            'accepted': record.accepted,
+        }
+        return Response(data, status=status.HTTP_200_OK)
     
     except Event.DoesNotExist:
         # Optionally create event if it doesn't exist
-        event = Event.objects.create(eventId=event_id, signUps=1)
-        serializer = EventSerializer(event)
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        record = Event.objects.create(eventId=event_id, signUps=1)
+        data = {
+            'id': str(record.id),
+            'title': record.title,
+            'image': record.image,
+            'description': record.description,
+            'location': record.location,
+            'host': record.host,
+            'signups': record.signups,
+            'distance': record.distance,
+            'date': record.date.strftime('%B %d, %Y'),    
+            'time': record.time.strftime('%-I:%M %p'),  
+            'accepted': record.accepted,
+        }
+        return Response(data, status=status.HTTP_201_CREATED)
 
 # User sends post request with location
 def get_events(request):
@@ -67,8 +91,23 @@ def get_events(request):
   from .models import Event # Import your model
   # Example: Fetch all records
   records = Event.objects.all()
-  serializer = EventSerializer(records, many=True)
-  return Response(serializer.data, status=status.HTTP_200_OK)
+  # Convert queryset to a list of dictionaries
+  data = []
+  for record in records:
+      data.append({
+          'id': str(record.id),
+          'title': record.title,
+          'image': record.image,
+          'description': record.description,
+          'location': record.location,
+          'host': record.host,
+          'signups': record.signups,
+          'distance': record.distance,
+          'date': record.date.strftime('%B %d, %Y'),    
+          'time': record.time.strftime('%-I:%M %p'),  
+          'accepted': record.accepted,
+      })
+  return JsonResponse(data, safe=False)
 
 @api_view(['GET', 'POST'])
 def add_events(request):
@@ -118,7 +157,6 @@ def add_events(request):
     
     serializer = EventSerializer(new_event)
     return Response(serializer.data, status=status.HTTP_201_CREATED)
-
 @api_view(['DELETE'])
 def delete_all_events(request):
     count, _ = Event.objects.all().delete()
