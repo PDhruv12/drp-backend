@@ -24,7 +24,7 @@ def get_data_from_db_orm(request):
   data = [model_to_dict(record) for record in records]
   return JsonResponse(data, safe=False)
 
-@api_view(['POST'])
+@api_view(['GET', 'POST'])
 def example_data_view(request):
   name1 = request.query_params.get('name')
   value1 = request.query_params.get('value')
@@ -41,7 +41,7 @@ def get_signups(request, event_id):
     except EventSignUpModel.DoesNotExist:
         return Response({'error': 'Event not found'}, status=status.HTTP_404_NOT_FOUND)
 
-@api_view(['POST'])
+@api_view(['GET', 'POST'])
 def update_signups(request, event_id):
     try:
         event = EventSignUpModel.objects.get(eventId=event_id)
