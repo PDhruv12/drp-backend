@@ -142,7 +142,8 @@ def add_events(request):
     
     serializer = EventSerializer(new_event)
     return Response(serializer.data, status=status.HTTP_201_CREATED)
-@api_view(['DELETE'])
+
+@api_view(['DELETE', 'GET'])
 def delete_all_events(request):
     count, _ = Event.objects.all().delete()
     return Response({'message': f'{count} events deleted.'})
