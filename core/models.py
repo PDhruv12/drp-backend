@@ -46,7 +46,7 @@ class EventTable(models.Model):
 # --- Event Image Table ---
 class EventImage(models.Model):
     image_id = models.AutoField(primary_key=True)
-    image = models.ImageField(upload_to='event_images/', null=False)
+    image = models.URLField()
     event = models.ForeignKey(EventTable, on_delete=models.CASCADE, related_name='images', unique=False)
 
 
