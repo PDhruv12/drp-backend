@@ -31,7 +31,7 @@ def event_sign_up(requets, user_id, event_id):
 @api_view(['POST'])
 def add_event(request, user_id):
     data = request.data
-
+    print(data)
     # Extract individual fields
     title = data.get('title')
     date = data.get('date')
