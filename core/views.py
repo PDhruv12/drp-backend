@@ -233,4 +233,4 @@ def delete_all_events(request):
 def view_images(request):
     records = EventImage.objects.all()
     serializer = EventImageSerializer(records, many=True)
-    return JsonResponse(serializer.data, status=status.HTTP_200_OK)
+    return JsonResponse(serializer.data, status=status.HTTP_200_OK, safe=False)
