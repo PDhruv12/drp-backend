@@ -6,6 +6,9 @@ from rest_framework import status
 from .models import EventTable, UserTable, EventImage, Attendee
 from .serializers import UserSerializer, EventImageSerializer
 
+import logging
+logger = logging.getLogger(__name__)
+
 @api_view(['GET'])
 def get_events(request, user_id):
     combined_data = []
@@ -37,7 +40,7 @@ def event_sign_up(request, user_id, event_id):
 @api_view(['POST'])
 def add_event(request, user_id):
     data = request.data
-
+    logger.info(f"POST data from user {user_id}: {request.data}")
     # Extract individual fields
     title = data.get('title')
     date = data.get('date')
