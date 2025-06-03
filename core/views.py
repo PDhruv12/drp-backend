@@ -57,7 +57,7 @@ def add_event(request, user_id):
         end_time=end_time,
         location=location,
         description=description,
-        host_id=user_id
+        host_id=host
     )
 
     for url in image_urls:
