@@ -1,3 +1,4 @@
+from datetime import datetime
 from django.http import JsonResponse
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -48,22 +49,23 @@ def add_user(request):
     date_of_birth = '01-01-2001'
     description = 'description'
     # Validate required fields minimally
-    if not all([user_id, name, description, password_hash, date_of_birth]):
+    if not all([user_id, name, password_hash, date_of_birth, description]):
         return Response({'error': 'Missing required fields.'}, status=status.HTTP_400_BAD_REQUEST)
-    
-    from datetime import datetime
+
     try:
         date_obj = datetime.strptime(date_of_birth, '%d-%m-%Y').date()
     except ValueError:
-        return Response({'error': 'Invalid date or time format. Date format: YYYY-MM-DD, Time format: HH:MM'}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'error': 'Invalid date format. Date format: DD-MM-YYYY'}, status=status.HTTP_400_BAD_REQUEST)
 
-    # Create the event record
+    if UserTable.objects.filter(user_id=user_id).exists():
+        return Response({'error': 'User ID already exists.'}, status=status.HTTP_400_BAD_REQUEST)
+
     new_user = UserTable.objects.create(
-        user_id = user_id,
-        name = name,
-        password_hash = password_hash,
-        date_of_birth = date_obj,
-        description = description
+        user_id=user_id,
+        name=name,
+        password_hash=password_hash,
+        date_of_birth=date_obj,
+        description=description
     )
     serializer = UserSerializer(new_user)
     return Response(serializer.data, status=status.HTTP_201_CREATED)
