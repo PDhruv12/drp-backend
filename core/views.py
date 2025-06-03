@@ -37,12 +37,16 @@ def users(request):
 
 @api_view(['GET', 'POST'])
 def add_user(request):
-    user_id = request.query_params.get('user')
-    name = request.query_params.get('name')
-    password_hash = request.query_params.get('pass')
-    date_of_birth = request.query_params.get('dob')
-    description = request.query_params.get('description')
-
+    # user_id = request.query_params.get('user')
+    # name = request.query_params.get('name')
+    # password_hash = request.query_params.get('pass')
+    # date_of_birth = request.query_params.get('dob')
+    # description = request.query_params.get('description')
+    user_id = 'user'
+    name = 'name'
+    password_hash = 'pass'
+    date_of_birth = '01-01-2001'
+    description = 'description'
     # Validate required fields minimally
     if not all([user_id, name, description, password_hash, date_of_birth]):
         return Response({'error': 'Missing required fields.'}, status=status.HTTP_400_BAD_REQUEST)
