@@ -42,7 +42,7 @@ def add_user(request):
     # password_hash = request.query_params.get('pass')
     # date_of_birth = request.query_params.get('dob')
     # description = request.query_params.get('description')
-    user_id = 'user'
+    user_id = 'user123'
     name = 'name'
     password_hash = 'pass'
     date_of_birth = '01-01-2001'

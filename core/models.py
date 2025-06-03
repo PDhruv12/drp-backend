@@ -1,6 +1,5 @@
 from datetime import time
 from django.db import models
-import uuid
 
 # class Event(models.Model):
 #     title = models.CharField(max_length=200)
@@ -19,7 +18,7 @@ import uuid
 
 # --- User Table ---
 class User(models.Model):
-    user_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True)
+    user_id = models.TextField(primary_key=True, editable=False, unique=True)
     name = models.TextField(null=False)
     password_hash = models.TextField(null=False)
     date_of_birth = models.DateField(null=False)
