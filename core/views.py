@@ -4,7 +4,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 from .models import EventTable, UserTable, EventImage, Attendee
-from .serializers import UserSerializer
+from .serializers import UserSerializer, EventImageSerializer
 
 @api_view(['GET'])
 def get_events(request, user_id):
@@ -37,7 +37,7 @@ def event_sign_up(request, user_id, event_id):
 @api_view(['POST'])
 def add_event(request, user_id):
     data = request.data
-    print(data)
+
     # Extract individual fields
     title = data.get('title')
     date = data.get('date')
@@ -228,3 +228,9 @@ def event_to_json(event_id, user_id):
 def delete_all_events(request):
     count, _ = EventTable.objects.all().delete()
     return Response({'message': f'{count} events deleted.'})
+
+@api_view(['GET'])
+def view_images(request):
+    records = EventImage.objects.all()
+    serializer = EventImageSerializer(records, many=True)
+    return JsonResponse(serializer.data, status=status.HTTP_200_OK)
