@@ -18,7 +18,7 @@ def get_event(request, user_id, event_id):
     return Response(event_to_json(event_id, user_id), status=status.HTTP_200_OK)
 
 @api_view(['GET', 'POST'])
-def event_sign_up(requets, user_id, event_id):
+def event_sign_up(request, user_id, event_id):
     try:
         event = EventTable.objects.get(event_id = event_id)
         user_info = UserTable.objects.get(user_id = user_id)
@@ -29,6 +29,8 @@ def event_sign_up(requets, user_id, event_id):
 
     except EventTable.DoesNotExist:
         return Response({"detail": "Event not found."},status=status.HTTP_404_NOT_FOUND)
+    except UserTable.DoesNotExist:
+        return Response({"detail": "User not found."}, status=status.HTTP_404_NOT_FOUND)
 
 @api_view(['POST'])
 def add_event(request, user_id):
