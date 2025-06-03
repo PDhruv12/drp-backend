@@ -20,7 +20,9 @@ def get_event(request, user_id, event_id):
 @api_view(['GET', 'POST'])
 def event_sign_up(requets, user_id, event_id):
     try:
-        attendee_exists = Attendee.objects.filter(event = event_id, user=user_id).exists()
+        event = EventTable.objects.get(event_id = event_id)
+        user_info = UserTable.objects.get(user_id = user_id)
+        attendee_exists = Attendee.objects.filter(event = event, user=user_info).exists()
         if not attendee_exists:
             Attendee.objects.create(event=event_id, user=user_id)
         return Response(event_to_json(event_id, user_id), status=status.HTTP_200_OK)
