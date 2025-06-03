@@ -29,7 +29,7 @@ def event_sign_up(requets, user_id, event_id):
         return Response({"detail": "Event not found."},status=status.HTTP_404_NOT_FOUND)
 
 @api_view(['POST'])
-def add_event(request):
+def add_event(request, user_id):
     data = request.data
 
     # Extract individual fields
