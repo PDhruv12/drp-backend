@@ -110,7 +110,7 @@ def add_user(request):
 def event_to_json(event_id, user_id):
     event = EventTable.objects.get(event_id = event_id)
     image_obj = EventImage.objects.filter(event = event.event_id)
-    host_info = UserTable.objects.get(user_id = event.host_id).name
+    host_info = UserTable.objects.get(user_id = event.host_id.user_id).name
     attendees = Attendee.objects.filter(event = event.event_id)
     accepted = attendees.get(user = user_id)
     if not image_obj.exists():

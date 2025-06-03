@@ -40,5 +40,6 @@ urlpatterns = [
     path('<user_id>/event/<int:event_id>/', views.get_event, name='event_specific'),
     path('<user_id>/event/<int:event_id>/signup', views.event_sign_up, name='signup'),
     path('<user_id>/event/create', views.add_event, name='add_event'),
-    path('user', views.add_user, name='adds user')
+    path('user', views.add_user, name='adds user'),
+    path('user-view', views.users, name='users')
 ]
