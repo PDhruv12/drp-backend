@@ -11,7 +11,7 @@ def get_events(request, user_id):
     combined_data = []
     for event in EventTable.objects.all():
         combined_data.append(event_to_json(event.event_id, user_id))
-    return Response(combined_data, safe=False, status=status.HTTP_200_OK)
+    return Response(combined_data, status=status.HTTP_200_OK)
 
 @api_view(['GET'])
 def get_event(request, user_id, event_id):
@@ -34,7 +34,7 @@ def event_sign_up(requets, user_id, event_id):
 def users(request):
     records = UserTable.objects.all()
     serializer = UserSerializer(records, many=True)
-    return JsonResponse(serializer.data, safe=False, status=status.HTTP_200_OK)
+    return JsonResponse(serializer.data, status=status.HTTP_200_OK)
 
 @api_view(['GET', 'POST'])
 def add_user(request):
