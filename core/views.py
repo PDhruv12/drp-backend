@@ -112,7 +112,7 @@ def event_to_json(event_id, user_id):
     image_obj = EventImage.objects.filter(event = event.event_id)
     host_info = UserTable.objects.get(user_id = event.host_id.user_id).name
     attendees = Attendee.objects.filter(event = event.event_id)
-    accepted = attendees.get(user = user_id)
+    accepted = attendees.filter(user = user_id).exists()
     if not image_obj.exists():
         img = 'https://picsum.photos/seed/potluck/200/200'
     else:
