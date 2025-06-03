@@ -47,13 +47,13 @@ class EventTable(models.Model):
 class EventImage(models.Model):
     image_id = models.AutoField(primary_key=True)
     image = models.ImageField(upload_to='event_images/', null=False)
-    event_id = models.ForeignKey(EventTable, on_delete=models.CASCADE, related_name='images', unique=False)
+    event = models.ForeignKey(EventTable, on_delete=models.CASCADE, related_name='images', unique=False)
 
 
 # --- Attendees Table ---
 class Attendee(models.Model):
-    event_id = models.ForeignKey(EventTable, on_delete=models.CASCADE, unique=False)
-    user_id = models.ForeignKey(UserTable, on_delete=models.CASCADE, unique=False)
+    event = models.ForeignKey(EventTable, on_delete=models.CASCADE, unique=False)
+    user = models.ForeignKey(UserTable, on_delete=models.CASCADE, unique=False)
 
     class Meta:
         unique_together = ('event_id', 'user_id')

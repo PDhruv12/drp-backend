@@ -19,9 +19,9 @@ def get_event(request, user_id, event_id):
 @api_view(['GET', 'POST'])
 def event_sign_up(requets, user_id, event_id):
     try:
-        attendee_exists = Attendee.objects.filter(event_id = event_id, user_id=user_id).exists()
+        attendee_exists = Attendee.objects.filter(event = event_id, user=user_id).exists()
         if not attendee_exists:
-            Attendee.objects.create(event_id=event_id, user_id=user_id)
+            Attendee.objects.create(event=event_id, user=user_id)
         return Response(event_to_json(event_id, user_id), status=status.HTTP_200_OK)
 
     except EventTable.DoesNotExist:
@@ -70,10 +70,10 @@ def add_user(request):
 
 def event_to_json(event_id, user_id):
     event = EventTable.objects.get(event_id = event_id)
-    image_obj = EventImage.objects.filter(event_id = event.event_id).first().image
+    image_obj = EventImage.objects.filter(event = event.event_id).first().image
     host_info = UserTable.objects.get(user_id = event.host_id).name
-    attendees = Attendee.objects.filter(event_id = event.event_id)
-    accepted = attendees.get(event_id=event_id, user_id = user_id)
+    attendees = Attendee.objects.filter(event = event.event_id)
+    accepted = attendees.get(user = user_id)
     return {
         "id": event.event_id,
         "title": event.title,
