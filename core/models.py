@@ -62,6 +62,7 @@ class Attendee(models.Model):
 
 # --- Bookmarks Table ---
 class Bookmark(models.Model):
+    id = models.AutoField(primary_key=True)
     event = models.ForeignKey(EventTable, on_delete=models.CASCADE, unique=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE, unique=False)
 
