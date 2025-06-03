@@ -2,6 +2,10 @@ from django.test import TestCase
 from .models import EventTable
 from datetime import date, time
 
+class SimpleTest(TestCase):
+    def test_basic_math(self):
+        self.assertEqual(1 + 1, 2)
+
 # class EventModelTest(TestCase):
 
 #     def setUp(self):
