@@ -109,14 +109,18 @@ def add_user(request):
 
 def event_to_json(event_id, user_id):
     event = EventTable.objects.get(event_id = event_id)
-    image_obj = EventImage.objects.filter(event = event.event_id).first().image
+    image_obj = EventImage.objects.filter(event = event.event_id)
     host_info = UserTable.objects.get(user_id = event.host_id).name
     attendees = Attendee.objects.filter(event = event.event_id)
     accepted = attendees.get(user = user_id)
+    if(image_obj.exists()):
+        img = 'https://picsum.photos/seed/potluck/200/200'
+    else:
+        img = image_obj.first().image
     return {
         "id": event.event_id,
         "title": event.title,
-        "image": image_obj,
+        "image": img,
         "description": event.description,
         "location": event.location,
         "host": host_info,
