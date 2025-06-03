@@ -222,7 +222,7 @@ def event_to_json(event_id, user_id):
 #     serializer = EventSerializer(new_event)
 #     return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-# @api_view(['DELETE', 'GET'])
-# def delete_all_events(request):
-#     count, _ = Event.objects.all().delete()
-#     return Response({'message': f'{count} events deleted.'})
+@api_view(['DELETE', 'GET'])
+def delete_all_events(request):
+    count, _ = EventTable.objects.all().delete()
+    return Response({'message': f'{count} events deleted.'})
