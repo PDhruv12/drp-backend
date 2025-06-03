@@ -2,7 +2,7 @@ from django.http import JsonResponse
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
-from .models import EventTable, User, EventImage, Attendee
+from .models import EventTable, UserTable, EventImage, Attendee
 from .serializers import UserSerializer
 
 @api_view(['GET'])
@@ -31,7 +31,7 @@ def event_sign_up(requets, user_id, event_id):
 
 @api_view(['GET'])
 def users(request):
-    records = User.objects.all()
+    records = UserTable.objects.all()
     serializer = UserSerializer(records, many=True)
     return JsonResponse(serializer.data, safe=False, status=status.HTTP_200_OK)
 
@@ -58,7 +58,7 @@ def add_user(request):
         return Response({'error': 'Invalid date or time format. Date format: YYYY-MM-DD, Time format: HH:MM'}, status=status.HTTP_400_BAD_REQUEST)
 
     # Create the event record
-    new_user = User.objects.create(
+    new_user = UserTable.objects.create(
         user_id = user_id,
         name = name,
         password_hash = password_hash,
@@ -71,7 +71,7 @@ def add_user(request):
 def event_to_json(event_id, user_id):
     event = EventTable.objects.get(event_id = event_id)
     image_obj = EventImage.objects.filter(event_id = event.event_id).first().image
-    host_info = User.objects.get(user_id = event.host_id).name
+    host_info = UserTable.objects.get(user_id = event.host_id).name
     attendees = Attendee.objects.filter(event_id = event.event_id)
     accepted = attendees.get(event_id=event_id, user_id = user_id)
     return {

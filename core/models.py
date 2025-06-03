@@ -17,7 +17,7 @@ from django.db import models
 #         return self.title
 
 # --- User Table ---
-class User(models.Model):
+class UserTable(models.Model):
     user_id = models.TextField(primary_key=True, editable=False, unique=True)
     name = models.TextField(null=False)
     password_hash = models.TextField(null=False)
@@ -31,7 +31,7 @@ class User(models.Model):
 # --- Event Table ---
 class EventTable(models.Model):
     event_id = models.AutoField(primary_key=True)
-    host_id = models.ForeignKey(User, on_delete=models.CASCADE, related_name='host_id')
+    host_id = models.ForeignKey(UserTable, on_delete=models.CASCADE, related_name='host_id')
     title = models.TextField(null=False)
     description = models.TextField(null=False)
     location = models.TextField(null=False)
@@ -53,7 +53,7 @@ class EventImage(models.Model):
 # --- Attendees Table ---
 class Attendee(models.Model):
     event_id = models.ForeignKey(EventTable, on_delete=models.CASCADE, unique=False)
-    user_id = models.ForeignKey(User, on_delete=models.CASCADE, unique=False)
+    user_id = models.ForeignKey(UserTable, on_delete=models.CASCADE, unique=False)
 
     class Meta:
         unique_together = ('event_id', 'user_id')
