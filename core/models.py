@@ -27,3 +27,17 @@ class Event(models.Model):
 
     def __str__(self):
         return self.title
+
+# class Event(models.Model):
+#     event_id = models.AutoField(primary_key=True)
+#     title = models.CharField(max_length=200)
+#     description = models.TextField()
+#     location = models.CharField(max_length=255)
+#     host = models.CharField(max_length=100)
+#     signups = models.PositiveIntegerField(default=0)
+#     date = models.DateField()
+#     start_time = models.TimeField()
+#     end_time = models.TimeField()
+
+#     def __str__(self):
+#         return self.title

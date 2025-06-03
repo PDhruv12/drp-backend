@@ -45,54 +45,27 @@ def get_signups(request, event_id):
 def update_signups(request, event_id):
     try:
         event = Event.objects.get(id=event_id)
-        if(event.accepted == False):
-          event.signups += 1
-          event.accepted = True
-        else:
-          event.signups -= 1
-          event.accepted = False
-        event.save()
-        data = {
-            'id': str(event.id),
-            'title': event.title,
-            'image': event.image,
-            'description': event.description,
-            'location': event.location,
-            'host': event.host,
-            'signups': event.signups,
-            'distance': event.distance,
-            'date': event.date.strftime('%B %d, %Y'),    
-            'time': event.time.strftime('%-I:%M %p'),  
-            'accepted': event.accepted,
-        }
-        return Response(data, status=status.HTTP_200_OK)
-    
-    except Event.DoesNotExist:
-        return Response(data, status=status.HTTP_400_BAD_REQUEST)
 
-# User sends post request with location
+        if not event.accepted:
+            event.signups += 1
+            event.accepted = True
+        else:
+            event.signups -= 1
+            event.accepted = False
+        event.save()
+        serializer = EventSerializer(event)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    except Event.DoesNotExist:
+        return Response(
+            {"detail": "Event not found."},
+            status=status.HTTP_404_NOT_FOUND
+        )
+
 def get_events(request):
-  # This is a placeholder. You need to define YourTableModel in a models.py file.
-  from .models import Event # Import your model
-  # Example: Fetch all records
-  records = Event.objects.all()
-  # Convert queryset to a list of dictionaries
-  data = []
-  for record in records:
-      data.append({
-          'id': str(record.id),
-          'title': record.title,
-          'image': record.image,
-          'description': record.description,
-          'location': record.location,
-          'host': record.host,
-          'signups': record.signups,
-          'distance': record.distance,
-          'date': record.date.strftime('%B %d, %Y'),    
-          'time': record.time.strftime('%-I:%M %p'),  
-          'accepted': record.accepted,
-      })
-  return JsonResponse(data, safe=False)
+    records = Event.objects.all()
+    serializer = EventSerializer(records, many=True)
+    return JsonResponse(serializer.data, safe=False)
 
 @api_view(['GET', 'POST'])
 def add_events(request):
