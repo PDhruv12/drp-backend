@@ -59,11 +59,11 @@ def add_user(request):
 
     # Create the event record
     new_user = User.objects.create(
-        user_id,
-        name,
-        password_hash,
-        date_obj,
-        description
+        user_id = user_id,
+        name = name,
+        password_hash = password_hash,
+        date_of_birth = date_obj,
+        description = description
     )
     serializer = UserSerializer(new_user)
     return Response(serializer.data, status=status.HTTP_201_CREATED)
