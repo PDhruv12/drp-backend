@@ -25,6 +25,8 @@ def event_sign_up(request, user_id, event_id):
         attendee_exists = Attendee.objects.filter(event = event, user=user_info).exists()
         if not attendee_exists:
             Attendee.objects.create(event = event, user=user_info)
+        else:
+            Attendee.objects.filter(event=event, user=user_info).delete()
         return Response(event_to_json(event_id, user_id), status=status.HTTP_200_OK)
 
     except EventTable.DoesNotExist:
