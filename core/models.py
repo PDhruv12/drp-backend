@@ -61,9 +61,9 @@ class Attendee(models.Model):
 
 
 # --- Bookmarks Table ---
-class Bookmark(models.Model):
-    event_id = models.ForeignKey(EventTable, on_delete=models.CASCADE, unique=False)
-    user_id = models.ForeignKey(User, on_delete=models.CASCADE, unique=False)
+# class Bookmark(models.Model):
+#     event_id = models.ForeignKey(EventTable, on_delete=models.CASCADE, unique=False)
+#     user_id = models.ForeignKey(User, on_delete=models.CASCADE, unique=False)
 
-    class Meta:
-        unique_together = ('event_id', 'user_id')
+#     class Meta:
+#         unique_together = ('event_id', 'user_id')
