@@ -1,6 +1,6 @@
 
 from rest_framework import serializers
-from .models import UserTable
+from .models import UserTable, EventTable
 
 # class EventSerializer(serializers.ModelSerializer):
 #     # Format date and time fields as strings
@@ -25,3 +25,7 @@ class UserSerializer(serializers.ModelSerializer):
         model = UserTable
         fields = ['user_id', 'name', 'password_hash', 'date_of_birth', 'description']
 
+class EventSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = EventTable
+        fields = '__all__'

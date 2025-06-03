@@ -36,7 +36,7 @@ class EventTable(models.Model):
     description = models.TextField(null=False)
     location = models.TextField(null=False)
     start_time = models.TimeField(null=False)
-    end_time = models.TimeField(null=False, default=time(18, 0))
+    end_time = models.TimeField(null=False)
     date = models.DateField(null=False)
 
     def __str__(self):

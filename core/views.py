@@ -28,6 +28,43 @@ def event_sign_up(requets, user_id, event_id):
     except EventTable.DoesNotExist:
         return Response({"detail": "Event not found."},status=status.HTTP_404_NOT_FOUND)
 
+@api_view(['POST'])
+def add_event(request):
+    data = request.data
+
+    # Extract individual fields
+    title = data.get('title')
+    date = data.get('date')
+    start_time = data.get('start_time')
+    end_time = data.get('end_time')
+    location = data.get('location')
+    description = data.get('description')
+    host_id = data.get('host_id')
+    image_urls = data.get('images', [])
+
+    if not all([title, date, start_time, location, description, host_id]):
+        return Response({"error": "Missing required fields"}, status=status.HTTP_400_BAD_REQUEST)
+
+    try:
+        host = UserTable.objects.get(user_id=host_id)
+    except UserTable.DoesNotExist:
+        return Response({"error": "Host user does not exist"}, status=status.HTTP_400_BAD_REQUEST)
+    
+    event = EventTable.objects.create(
+        title=title,
+        date=date,
+        start_time=start_time,
+        end_time=end_time,
+        location=location,
+        description=description,
+        host_id=host
+    )
+
+    for url in image_urls:
+        EventImage.objects.create(event_id=event, image=url)
+
+    return Response({"message": "Event created", "event_id": event.event_id}, status=status.HTTP_201_CREATED)
+
 # ___________________________________________________________________________________________
 
 @api_view(['GET'])
