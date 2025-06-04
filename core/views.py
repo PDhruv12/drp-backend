@@ -124,9 +124,9 @@ def event_to_json(event_id, user_id):
     attendees = Attendee.objects.filter(event = event.event_id)
     accepted = attendees.filter(user = user_id).exists()
     if not image_obj.exists():
-        img = 'https://picsum.photos/seed/potluck/200/200'
+        img = ['https://picsum.photos/seed/potluck/200/200']
     else:
-        img = image_obj.first().image
+        img = [image_entry.image for image_entry in image_obj]
     return {
         "id": event.event_id,
         "title": event.title,
