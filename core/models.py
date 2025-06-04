@@ -42,7 +42,8 @@ class EventTable(models.Model):
     start_time = models.TimeField(null=False)
     end_time = models.TimeField(null=False)
     date = models.DateField(null=False)
-    distance = models.FloatField(default=generate_random_distance())
+    distance = models.FloatField(default=generate_random_distance)
+    price = models.FloatField(default=0.0)
 
     def __str__(self):
         return self.title
