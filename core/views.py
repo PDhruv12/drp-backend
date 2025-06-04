@@ -70,7 +70,7 @@ def add_event(request, user_id):
     )
 
     for url in image_urls:
-        EventImage.objects.create(event_id=event, image=url)
+        EventImage.objects.create(event=event, image=url)
 
     return Response({"message": "Event created", "event_id": event.event_id}, status=status.HTTP_201_CREATED)
 
