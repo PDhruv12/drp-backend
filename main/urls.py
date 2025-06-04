@@ -45,5 +45,6 @@ urlpatterns = [
     path('user', views.add_user, name='adds user'),
     path('user-view', views.users, name='users'),
     path('delete-all/', views.delete_all_events, name='delete-all'),
+    path('delete/<int:event_id>/', views.delete_particular_event),
     path('images-view', views.view_images),
 ]

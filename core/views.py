@@ -234,6 +234,10 @@ def delete_all_events(request):
     return Response({'message': f'{count} events deleted.'})
 
 @api_view(['GET'])
+def delete_particular_event(request, event_id):
+    EventTable.objects.get(event_id = event_id).delete()
+
+@api_view(['GET'])
 def view_images(request):
     records = EventImage.objects.all()
     serializer = EventImageSerializer(records, many=True)
