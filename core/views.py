@@ -1,4 +1,5 @@
 from datetime import datetime
+import random
 from django.http import JsonResponse
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -134,7 +135,7 @@ def event_to_json(event_id, user_id):
         "location": event.location,
         "host": host_info,
         "signups": attendees.count(),
-        "distance": 1.2,
+        "distance": round(random.uniform(0, 10), 1),
         "date": event.date.strftime('%B %d, %Y'),
         "time": event.start_time.strftime('%-I:%M %p'),
         "end_time": event.end_time.strftime('%-I:%M %p'),
