@@ -135,7 +135,7 @@ def event_to_json(event_id, user_id):
         "location": event.location,
         "host": host_info,
         "signups": attendees.count(),
-        "distance": round(random.uniform(0, 10), 1),
+        "distance": event.distance,
         "date": event.date.strftime('%B %d, %Y'),
         "time": event.start_time.strftime('%-I:%M %p'),
         "end_time": event.end_time.strftime('%-I:%M %p'),

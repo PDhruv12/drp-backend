@@ -1,4 +1,5 @@
 from datetime import time
+import random
 from django.db import models
 
 # class Event(models.Model):
@@ -15,6 +16,9 @@ from django.db import models
 
 #     def __str__(self):
 #         return self.title
+
+def generate_random_distance():
+    return round(random.uniform(0, 10), 1)
 
 # --- User Table ---
 class UserTable(models.Model):
@@ -38,6 +42,7 @@ class EventTable(models.Model):
     start_time = models.TimeField(null=False)
     end_time = models.TimeField(null=False)
     date = models.DateField(null=False)
+    distance = models.FloatField(default=generate_random_distance())
 
     def __str__(self):
         return self.title
