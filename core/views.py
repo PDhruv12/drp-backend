@@ -49,7 +49,7 @@ def add_event(request, user_id):
     location = data.get('location')
     description = data.get('description')
     host_id = data.get('host_id')
-    image_urls = data.get('images', [])
+    image_urls = data.get('image_urls', [])
 
     if not all([title, date, start_time, location, description, host_id]):
         return Response({"error": "Missing required fields"}, status=status.HTTP_400_BAD_REQUEST)
