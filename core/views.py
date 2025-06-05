@@ -133,7 +133,7 @@ def login(request):
         return Response({'error': 'User ID does not exist.'}, status=status.HTTP_400_BAD_REQUEST)
     else:
         hash = pass_hash.first()
-        if hash == to_check:
+        if hash.password_hash == to_check:
             return Response({'Valid User': "Authorized"}, status=status.HTTP_200_OK)
         else:
             return Response({'error': 'Password wrong.'}, status=status.HTTP_400_BAD_REQUEST)
