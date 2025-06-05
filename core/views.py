@@ -86,7 +86,7 @@ def add_event(request, user_id):
 def users(request):
     records = UserTable.objects.all()
     serializer = UserSerializer(records, many=True)
-    return JsonResponse(serializer.data, status=status.HTTP_200_OK)
+    return JsonResponse(serializer.data, safe=False, status=status.HTTP_200_OK)
 
 @api_view(['GET', 'POST'])
 def add_user(request):
