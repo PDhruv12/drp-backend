@@ -49,6 +49,7 @@ def add_event(request, user_id):
     location = data.get('location')
     description = data.get('description')
     host_id = data.get('host_id')
+    price = data.get('price')
     image_urls = data.get('image_urls', [])
 
     if not all([title, date, start_time, location, description, host_id]):
@@ -66,7 +67,8 @@ def add_event(request, user_id):
         end_time=end_time,
         location=location,
         description=description,
-        host_id=host
+        host_id=host,
+        price=price
     )
 
     for url in image_urls:
