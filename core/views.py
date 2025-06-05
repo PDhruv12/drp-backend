@@ -123,6 +123,7 @@ def add_user(request):
     serializer = UserSerializer(new_user)
     return Response(serializer.data, status=status.HTTP_201_CREATED)
 
+@api_view(['POST'])
 def login(request):
     data = request.data
     user_id = data.get('user')
