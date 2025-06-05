@@ -64,6 +64,10 @@ class Attendee(models.Model):
     class Meta:
         unique_together = ('event_id', 'user_id')
 
+# --- Tags Table ---
+class Tag(models.Model):
+    event = models.ForeignKey(EventTable, on_delete=models.CASCADE, unique=False)
+    tag_name = models.TextField()
 
 # --- Bookmarks Table ---
 # class Bookmark(models.Model):

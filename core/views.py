@@ -3,7 +3,7 @@ from django.http import JsonResponse
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
-from .models import EventTable, UserTable, EventImage, Attendee
+from .models import EventTable, UserTable, EventImage, Attendee, Tag
 from .serializers import UserSerializer, EventImageSerializer
 
 import logging
@@ -51,6 +51,7 @@ def add_event(request, user_id):
     host_id = data.get('host_id')
     price = data.get('price')
     image_urls = data.get('image_urls', [])
+    tags = data.get('tags', [])
 
     if not all([title, date, start_time, location, description, host_id]):
         return Response({"error": "Missing required fields"}, status=status.HTTP_400_BAD_REQUEST)
@@ -74,6 +75,9 @@ def add_event(request, user_id):
     for url in image_urls:
         EventImage.objects.create(event=event, image=url)
 
+    for tag in tags:
+        Tag.objects.create(event=event, tag_name=tag)
+
     return Response({"message": "Event created", "event_id": event.event_id}, status=status.HTTP_201_CREATED)
 
 # ___________________________________________________________________________________________
@@ -86,16 +90,17 @@ def users(request):
 
 @api_view(['GET', 'POST'])
 def add_user(request):
-    # user_id = request.query_params.get('user')
-    # name = request.query_params.get('name')
-    # password_hash = request.query_params.get('pass')
-    # date_of_birth = request.query_params.get('dob')
-    # description = request.query_params.get('description')
-    user_id = 'user123'
-    name = 'Aditi Verma'
-    password_hash = 'pass'
-    date_of_birth = '01-01-2001'
-    description = 'description'
+    data = request.data
+    user_id = data.get('user')
+    name = data.get('name')
+    password_hash = data.get('pass')
+    date_of_birth = data.get('dob')
+    description = data.get('description')
+    # user_id = 'user123'
+    # name = 'Aditi Verma'
+    # password_hash = 'pass'
+    # date_of_birth = '01-01-2001'
+    # description = 'description'
     # Validate required fields minimally
     if not all([user_id, name, password_hash, date_of_birth, description]):
         return Response({'error': 'Missing required fields.'}, status=status.HTTP_400_BAD_REQUEST)
@@ -117,6 +122,20 @@ def add_user(request):
     )
     serializer = UserSerializer(new_user)
     return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+def login(request):
+    data = request.data
+    user_id = data.get('user')
+    to_check = data.get('pass')
+    pass_hash = UserTable.objects.filter(user_id=user_id)
+    if not pass_hash.exists():
+        return Response({'error': 'User ID does not exist.'}, status=status.HTTP_400_BAD_REQUEST)
+    else:
+        hash = pass_hash.first()
+        if hash == to_check:
+            return Response({'Valid User': "Authorized"}, status=status.HTTP_200_OK)
+        else:
+            return Response({'error': 'Password wrong.'}, status=status.HTTP_400_BAD_REQUEST)
 
 def event_to_json(event_id, user_id):
     event = EventTable.objects.get(event_id = event_id)
@@ -143,6 +162,22 @@ def event_to_json(event_id, user_id):
         "price": event.price,
         "accepted": accepted
     }
+
+# def search_events(request, user_id):
+#     data = request.data
+#     search_items = str(data.get('search')).split()
+#     records = EventTable.objects.all()
+#     combined_data = []
+#     for event in records:
+#         tags = Tag.objects.filter(event=event)
+#         for item in search_items:
+#             item_lower = item.lower()
+#             if (item_lower in event.title.lower() or
+#                 item_lower in event.description.lower() or
+#                 any(item_lower in tag.tag_name.lower() for tag in tags)):
+#                     combined_data.append(event_to_json(event.event_id, user_id))
+#                     break
+#     return Response(combined_data, status=status.HTTP_200_OK)
 
 # ____________________________________________________________________________________________
 

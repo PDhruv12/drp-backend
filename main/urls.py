@@ -42,7 +42,9 @@ urlpatterns = [
     path('<user_id>/event/create/', views.add_event, name='add_event'),
     path('<user_id>/event/create', views.add_event, name='add_event'),
 
-    path('user', views.add_user, name='adds user'),
+    path('user-login/', views.login, name="logins user"),
+    path('user-create/', views.add_user, name='adds user'),
+
     path('user-view', views.users, name='users'),
     path('delete-all/', views.delete_all_events, name='delete-all'),
     path('delete/<int:event_id>/', views.delete_particular_event),
