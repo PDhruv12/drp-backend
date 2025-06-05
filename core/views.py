@@ -90,7 +90,7 @@ def add_user(request):
     # date_of_birth = request.query_params.get('dob')
     # description = request.query_params.get('description')
     user_id = 'user123'
-    name = 'name'
+    name = 'Aditi Verma'
     password_hash = 'pass'
     date_of_birth = '01-01-2001'
     description = 'description'
