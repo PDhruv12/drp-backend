@@ -4,7 +4,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 from .models import EventTable, UserTable, EventImage, Attendee, Tag
-from .serializers import UserSerializer, EventImageSerializer
+from .serializers import UserSerializer, EventImageSerializer, TagsSerializer
 
 import logging
 logger = logging.getLogger(__name__)
@@ -96,11 +96,7 @@ def add_user(request):
     password_hash = data.get('pass')
     date_of_birth = data.get('dob')
     description = data.get('description')
-    # user_id = 'user123'
-    # name = 'Aditi Verma'
-    # password_hash = 'pass'
-    # date_of_birth = '01-01-2001'
-    # description = 'description'
+
     # Validate required fields minimally
     if not all([user_id, name, password_hash, date_of_birth, description]):
         return Response({'error': 'Missing required fields.'}, status=status.HTTP_400_BAD_REQUEST)
@@ -182,90 +178,6 @@ def event_to_json(event_id, user_id):
 
 # ____________________________________________________________________________________________
 
-# @api_view(['GET'])
-# def get_signups(request, event_id):
-#     try:
-#         event = Event.objects.get(id=event_id)
-#         serializer = EventSerializer(event)
-#         return Response(serializer.data, status=status.HTTP_200_OK)
-#     except Event.DoesNotExist:
-#         return Response({'error': 'Event not found'}, status=status.HTTP_404_NOT_FOUND)
-
-# @api_view(['GET', 'POST'])
-# def update_signups(request, event_id):
-#     try:
-#         event = Event.objects.get(id=event_id)
-
-#         if not event.accepted:
-#             event.signups += 1
-#             event.accepted = True
-#         else:
-#             event.signups -= 1
-#             event.accepted = False
-#         event.save()
-#         serializer = EventSerializer(event)
-#         return Response(serializer.data, status=status.HTTP_200_OK)
-
-#     except Event.DoesNotExist:
-#         return Response(
-#             {"detail": "Event not found."},
-#             status=status.HTTP_404_NOT_FOUND
-#         )
-
-# def get_events(request):
-#     records = Event.objects.all()
-#     serializer = EventSerializer(records, many=True)
-#     return JsonResponse(serializer.data, safe=False)
-
-# @api_view(['GET', 'POST'])
-# def add_events(request):
-#     title = request.query_params.get('title')
-#     image = request.query_params.get('image')
-#     description = request.query_params.get('description')
-#     location = request.query_params.get('location')
-#     host = request.query_params.get('host')
-#     signups = request.query_params.get('signups', 0)
-#     distance = request.query_params.get('distance')
-#     date = request.query_params.get('date')
-#     time = request.query_params.get('time')
-#     accepted = request.query_params.get('accepted', 'false').lower() == 'true'
-
-#     # Validate required fields minimally
-#     if not all([title, image, description, location, host, distance, date, time]):
-#         return Response({'error': 'Missing required fields.'}, status=status.HTTP_400_BAD_REQUEST)
-    
-#     # Convert signups and distance to proper types
-#     try:
-#         signups = int(signups)
-#         distance = float(distance)
-#     except ValueError:
-#         return Response({'error': 'Invalid signups or distance format.'}, status=status.HTTP_400_BAD_REQUEST)
-
-#     # Parse date and time fields (assuming 'YYYY-MM-DD' and 'HH:MM[:ss]' format)
-#     from datetime import datetime
-#     try:
-#         date_obj = datetime.strptime(date, '%d-%m-%Y').date()
-#         time_obj = datetime.strptime(time, '%H:%M').time()
-#     except ValueError:
-#         return Response({'error': 'Invalid date or time format. Date format: YYYY-MM-DD, Time format: HH:MM'}, status=status.HTTP_400_BAD_REQUEST)
-
-#     # Create the event record
-#     new_event = Event.objects.create(
-#         title=title,
-#         image=image,
-#         description=description,
-#         location=location,
-#         host=host,
-#         signups=signups,
-#         distance=distance,
-#         date=date_obj,
-#         time=time_obj,
-#         accepted=accepted,
-#     )
-    
-#     serializer = EventSerializer(new_event)
-#     return Response(serializer.data, status=status.HTTP_201_CREATED)
-
 @api_view(['DELETE', 'GET'])
 def delete_all_events(request):
     count, _ = EventTable.objects.all().delete()
@@ -280,3 +192,9 @@ def view_images(request):
     records = EventImage.objects.all()
     serializer = EventImageSerializer(records, many=True)
     return JsonResponse(serializer.data, status=status.HTTP_200_OK, safe=False)
+
+@api_view(['GET'])
+def getTags(request):
+    records = Tag.objects.all()
+    serializer = TagsSerializer(records, many=True)
+    return JsonResponse(serializer.data, status=status.HTTP_200_OK)
