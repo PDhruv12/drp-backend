@@ -197,4 +197,4 @@ def view_images(request):
 def getTags(request):
     records = Tag.objects.all()
     serializer = TagsSerializer(records, many=True)
-    return JsonResponse(serializer.data, status=status.HTTP_200_OK)
+    return JsonResponse(serializer.data, status=status.HTTP_200_OK, safe=False)
