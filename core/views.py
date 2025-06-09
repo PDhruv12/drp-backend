@@ -140,10 +140,18 @@ def event_to_json(event_id, user_id):
     host_info = UserTable.objects.get(user_id = event.host_id.user_id).name
     attendees = Attendee.objects.filter(event = event.event_id)
     accepted = attendees.filter(user = user_id).exists()
+    tags = Tag.objects.filter(event=event.event_id)
+
     if not image_obj.exists():
         img = ['https://picsum.photos/seed/potluck/200/200']
     else:
         img = [image_entry.image for image_entry in image_obj]
+    
+    if not tags.exists():
+        tag = []
+    else:
+        tag = [tag_entry.tag_name for tag_entry in tags]
+
     return {
         "id": event.event_id,
         "title": event.title,
@@ -151,6 +159,7 @@ def event_to_json(event_id, user_id):
         "description": event.description,
         "location": event.location,
         "host": host_info,
+        "tags": tag,
         "signups": attendees.count(),
         "distance": event.distance,
         "date": event.date.strftime('%B %d, %Y'),
