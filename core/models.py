@@ -69,6 +69,14 @@ class Tag(models.Model):
     event = models.ForeignKey(EventTable, on_delete=models.CASCADE, unique=False)
     tag_name = models.TextField()
 
+class Cohost(models.Model):
+    event = models.ForeignKey(EventTable, on_delete=models.CASCADE, related_name='event_cohost', unique=False)
+    host = models.ForeignKey(UserTable, on_delete=models.CASCADE, related_name='co_host', unique=False)
+
+    class Meta:
+        unique_together = ('event', 'host')
+
+
 # --- Bookmarks Table ---
 # class Bookmark(models.Model):
 #     event_id = models.ForeignKey(EventTable, on_delete=models.CASCADE, unique=False)

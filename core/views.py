@@ -1,9 +1,10 @@
 from datetime import datetime
+from django.forms import model_to_dict
 from django.http import JsonResponse
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
-from .models import EventTable, UserTable, EventImage, Attendee, Tag
+from .models import EventTable, UserTable, EventImage, Attendee, Tag, Cohost
 from .serializers import UserSerializer, EventImageSerializer, TagsSerializer
 
 import logging
@@ -52,6 +53,7 @@ def add_event(request, user_id):
     price = data.get('price')
     image_urls = data.get('image_urls', [])
     tags = data.get('tags', [])
+    cohosts = data.get('cohost', [])
 
     if not all([title, date, start_time, location, description, host_id]):
         return Response({"error": "Missing required fields"}, status=status.HTTP_400_BAD_REQUEST)
@@ -77,6 +79,11 @@ def add_event(request, user_id):
 
     for tag in tags:
         Tag.objects.create(event=event, tag_name=tag)
+
+    for cohost_id in cohosts:
+        cohost = UserTable.objects.filter(user_id=cohost_id)
+        if cohost.exists():
+            Cohost.objects.create(event=event, host=cohost.first())
 
     return Response({"message": "Event created", "event_id": event.event_id}, status=status.HTTP_201_CREATED)
 
@@ -141,6 +148,7 @@ def event_to_json(event_id, user_id):
     attendees = Attendee.objects.filter(event = event.event_id)
     accepted = attendees.filter(user = user_id).exists()
     tags = Tag.objects.filter(event=event.event_id)
+    cohosts = Cohost.objects.filter(event=event)
 
     if not image_obj.exists():
         img = ['https://picsum.photos/seed/potluck/200/200']
@@ -152,6 +160,13 @@ def event_to_json(event_id, user_id):
     else:
         tag = [tag_entry.tag_name for tag_entry in tags]
 
+    if not cohosts.exists():
+        cohost = []
+    else:
+        cohost = [
+            model_to_dict(cohost_entry.host, fields=['user_id', 'name', 'date_of_birth', 'description']) 
+            for cohost_entry in cohosts]
+
     return {
         "id": event.event_id,
         "title": event.title,
@@ -159,6 +174,7 @@ def event_to_json(event_id, user_id):
         "description": event.description,
         "location": event.location,
         "host": host_info,
+        "cohost": cohost,
         "tags": tag,
         "signups": attendees.count(),
         "distance": event.distance,

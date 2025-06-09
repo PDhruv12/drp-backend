@@ -1,6 +1,6 @@
 
 from rest_framework import serializers
-from .models import UserTable, EventTable, EventImage, Tag
+from .models import UserTable, EventTable, EventImage, Tag, Cohost
 
 # class EventSerializer(serializers.ModelSerializer):
 #     # Format date and time fields as strings
@@ -39,4 +39,9 @@ class EventImageSerializer(serializers.ModelSerializer):
 class TagsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tag
+        fields = '__all__'
+
+class CohostSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Cohost
         fields = '__all__'
