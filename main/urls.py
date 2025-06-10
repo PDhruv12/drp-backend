@@ -50,4 +50,5 @@ urlpatterns = [
     path('delete/<int:event_id>/', views.delete_particular_event),
     path('images-view', views.view_images),
     path('tags', views.getTags),
+    path('<user_id>/event-all/', views.get_events_all, name='all events')
 ]

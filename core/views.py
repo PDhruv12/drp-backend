@@ -4,17 +4,25 @@ from django.http import JsonResponse
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
-from .models import EventTable, UserTable, EventImage, Attendee, Tag, Cohost
+from .models import EventTable, UserTable, EventImage, Attendee, Tag, Cohost, Community, CommunityImage, CommunityTag, CommunityMember
 from .serializers import UserSerializer, EventImageSerializer, TagsSerializer
 
 import logging
 logger = logging.getLogger(__name__)
 
 @api_view(['GET'])
-def get_events(request, user_id):
+def get_events_all(request, user_id):
     combined_data = []
     for event in EventTable.objects.all():
         combined_data.append(event_to_json(event.event_id, user_id))
+    return Response(combined_data, status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+def get_events(request, user_id):
+    combined_data = []
+    for event in EventTable.objects.all():
+        if not event.over:
+            combined_data.append(event_to_json(event.event_id, user_id))
     return Response(combined_data, status=status.HTTP_200_OK)
 
 @api_view(['GET'])
@@ -167,6 +175,14 @@ def event_to_json(event_id, user_id):
             model_to_dict(cohost_entry.host, fields=['user_id', 'name', 'date_of_birth', 'description']) 
             for cohost_entry in cohosts]
 
+    current = datetime.now()
+    if (event.date < current.date()):
+        event.over = True
+    elif (event.date == current.date() and event.end_time < current.time()): 
+        event.over = True
+
+    event.save()
+
     return {
         "id": event.event_id,
         "title": event.title,
@@ -182,7 +198,8 @@ def event_to_json(event_id, user_id):
         "time": event.start_time.strftime('%-I:%M %p'),
         "end_time": event.end_time.strftime('%-I:%M %p'),
         "price": event.price,
-        "accepted": accepted
+        "accepted": accepted,
+        "over": event.over,
     }
 
 # def search_events(request, user_id):
@@ -223,3 +240,83 @@ def getTags(request):
     records = Tag.objects.all()
     serializer = TagsSerializer(records, many=True)
     return JsonResponse(serializer.data, status=status.HTTP_200_OK, safe=False)
+
+# ____________________________________________________________________________________
+
+@api_view(['POST'])
+def add_community(request, user_id):
+    data = request.data
+    
+    # Extract individual fields
+    name = data.get('name')
+    description = data.get('description')
+    image_urls = data.get('image_urls', [])
+    tags = data.get('tags', [])
+
+    if not all([name, description]):
+        return Response({"error": "Missing required fields"}, status=status.HTTP_400_BAD_REQUEST)
+
+    
+    community = Community.objects.create(
+        name=name,
+        description=description,
+    )
+
+    for url in image_urls:
+        CommunityImage.objects.create(community=community, image=url)
+
+    for tag in tags:
+        CommunityTag.objects.create(community=community, tag_name=tag)
+
+    user = UserTable.objects.create(user_id=user_id)
+    CommunityMember.objects.create(community=community, user=user)
+
+    return Response({"message": "Community created", "community_id": community.community_id}, status=status.HTTP_201_CREATED)
+
+@api_view(['GET'])
+def get_commutities(request, user_id):
+    combined_data = []
+    for community in Community.objects.all():
+        combined_data.append(community_to_json(community.community_id, user_id))
+    return Response(combined_data, status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+def get_your_commutities(request, user_id):
+    combined_data = []
+    user = UserTable.objects.get(user_id=user_id)
+    communities = CommunityMember.objects.filter(user=user)
+    for community in Community.objects.all():
+        if communities.filter(community=community).exists():
+            combined_data.append(community_to_json(community.community_id, user_id))
+    return Response(combined_data, status=status.HTTP_200_OK)
+
+def community_to_json(community_id, user_id):
+    community = Community.objects.get(community_id=community_id)
+    image_obj = CommunityImage.objects.filter(community=community)
+    tags = CommunityTag.objects.filter(community=community)
+    members = CommunityMember.objects.filter(community=community)
+    
+    if not image_obj.exists():
+        img = ['https://picsum.photos/seed/fire/200/200']
+    else:
+        img = [image_entry.image for image_entry in image_obj]
+    
+    if not tags.exists():
+        tag = []
+    else:
+        tag = [tag_entry.tag_name for tag_entry in tags]
+    
+    if not members.exists():
+        member = []
+    else:
+        member = [
+            model_to_dict(member_entry.user, fields=['user_id', 'name', 'date_of_birth', 'description']) 
+            for member_entry in members]
+
+    return {
+        "id": community.community_id,
+        "description": community.descrition,
+        "tags": tag,
+        "image": img,
+        "members": member,
+    }

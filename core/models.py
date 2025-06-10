@@ -2,21 +2,6 @@ from datetime import time
 import random
 from django.db import models
 
-# class Event(models.Model):
-#     title = models.CharField(max_length=200)
-#     image = models.URLField(max_length=500)
-#     description = models.TextField()
-#     location = models.CharField(max_length=255)
-#     host = models.CharField(max_length=100)
-#     signups = models.PositiveIntegerField(default=0)
-#     distance = models.FloatField(help_text="Distance in miles or kilometers")
-#     date = models.DateField()
-#     time = models.TimeField()
-#     accepted = models.BooleanField(default=False)
-
-#     def __str__(self):
-#         return self.title
-
 def generate_random_distance():
     return round(random.uniform(0, 10), 1)
 
@@ -44,6 +29,7 @@ class EventTable(models.Model):
     date = models.DateField(null=False)
     distance = models.FloatField(default=generate_random_distance)
     price = models.FloatField(default=0.0)
+    over = models.BooleanField(default=False)
 
     def __str__(self):
         return self.title
@@ -76,6 +62,27 @@ class Cohost(models.Model):
     class Meta:
         unique_together = ('event', 'host')
 
+# --- Community Table ---
+class Community(models.Model):
+    community_id = models.AutoField(primary_key=True)
+    name = models.TextField()
+    description = models.TextField()
+
+class CommunityTag(models.Model):
+    community = models.ForeignKey(Community, on_delete=models.CASCADE, unique=False)
+    tag_name = models.TextField()
+
+class CommunityImage(models.Model):
+    image_id = models.AutoField(primary_key=True)
+    image = models.TextField()
+    community = models.ForeignKey(Community, on_delete=models.CASCADE, unique=False)
+
+class CommunityMember(models.Model):
+    community = models.ForeignKey(Community, on_delete=models.CASCADE, unique=False)
+    user = models.ForeignKey(UserTable, on_delete=models.CASCADE, unique=False)
+
+    class Meta:
+        unique_together = ('community', 'user')
 
 # --- Bookmarks Table ---
 # class Bookmark(models.Model):
