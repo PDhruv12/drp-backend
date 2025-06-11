@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from django.forms import model_to_dict
 from django.http import JsonResponse
 from rest_framework.decorators import api_view
@@ -177,7 +177,7 @@ def event_to_json(event_id, user_id):
             for cohost_entry in cohosts]
 
     end_datetime = datetime.combine(event.date, event.end_time).replace(second=0, microsecond=0)
-    if end_datetime <= datetime.now().replace(second=0, microsecond=0):
+    if end_datetime <= (datetime.now().replace(second=0, microsecond=0) - timedelta(hours=1)):
         event.over = True
         event.save()
 
