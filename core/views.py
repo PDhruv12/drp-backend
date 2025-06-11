@@ -299,6 +299,7 @@ def community_to_json(community_id, user_id):
 
     return {
         "id": community.community_id,
+        "name": community.name,
         "description": community.description,
         "tags": tag,
         "image": img,
