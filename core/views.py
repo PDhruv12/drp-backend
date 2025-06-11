@@ -237,7 +237,7 @@ def add_community(request, user_id):
     description = data.get('description')
     image_urls = data.get('image_urls', [])
     tags = data.get('tags', [])
-    # members = data.get('memebrs')
+    members_id = data.get('members')
 
     if not all([name, description]):
         return Response({"error": "Missing required fields"}, status=status.HTTP_400_BAD_REQUEST)
@@ -252,6 +252,11 @@ def add_community(request, user_id):
 
     for tag in tags:
         CommunityTag.objects.create(community=community, tag_name=tag)
+
+    for member in members_id:
+        user = UserTable.objects.filter(user_id=member)
+        if user.exists():
+            CommunityMember.objects.create(community=community, user=user.first())
 
     user = UserTable.objects.get(user_id=user_id)
     CommunityMember.objects.create(community=community, user=user)
