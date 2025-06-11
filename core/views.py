@@ -176,13 +176,10 @@ def event_to_json(event_id, user_id):
             model_to_dict(cohost_entry.host, fields=['user_id', 'name', 'date_of_birth', 'description']) 
             for cohost_entry in cohosts]
 
-    current = datetime.now()
-    if (event.date < current.date()):
+    end_datetime = datetime.combine(event.date, event.end_time)
+    if end_datetime <= datetime.now():
         event.over = True
-    elif (event.date == current.date() and event.end_time < current.time()): 
-        event.over = True
-
-    event.save()
+        event.save()
 
     return {
         "id": event.event_id,
