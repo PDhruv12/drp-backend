@@ -375,7 +375,7 @@ def add_community_from_browser(request, user_id, name, description):
 
 @api_view(['GET'])
 def make_member(request, user_id, community_id):
-    user = UserTable.objects.create(user_id=user_id)
+    user = UserTable.objects.get(user_id=user_id)
     community = Community.objects.get(community_id=community_id)
     CommunityMember.objects.create(community=community, user=user)
     return Response({"message": "Community member"}, status=status.HTTP_201_CREATED)
