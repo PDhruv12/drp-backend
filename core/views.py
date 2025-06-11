@@ -241,7 +241,6 @@ def add_community(request, user_id):
     if not all([name, description]):
         return Response({"error": "Missing required fields"}, status=status.HTTP_400_BAD_REQUEST)
 
-    
     community = Community.objects.create(
         name=name,
         description=description,
@@ -259,14 +258,14 @@ def add_community(request, user_id):
     return Response({"message": "Community created", "community_id": community.community_id}, status=status.HTTP_201_CREATED)
 
 @api_view(['GET'])
-def get_commutities(request, user_id):
+def get_communities(request, user_id):
     combined_data = []
     for community in Community.objects.all():
         combined_data.append(community_to_json(community.community_id, user_id))
     return Response(combined_data, status=status.HTTP_200_OK)
 
 @api_view(['GET'])
-def get_my_commutities(request, user_id):
+def get_my_communities(request, user_id):
     combined_data = []
     user = UserTable.objects.get(user_id=user_id)
     communities = CommunityMember.objects.filter(user=user)
@@ -300,7 +299,7 @@ def community_to_json(community_id, user_id):
 
     return {
         "id": community.community_id,
-        "description": community.descrition,
+        "description": community.description,
         "tags": tag,
         "image": img,
         "members": member,
@@ -358,10 +357,17 @@ def message_to_json(message_id, user_id):
 
     return {
         "message_id": message.message_id,
-        'sender': model_to_dict(message.sender, fields=['user_id', 'name', 'date_of_birth', 'description']),
+        'sender': model_to_dict(message.sender, fields=['user_id', 'name']),
         'message_type': message.message_type,
         'text': text,
         'event': event, 
         "date": message.timestamp.strftime('%d %B, %Y'),
         "time": message.timestamp.strftime('%-I:%M %p'),
     }
+
+@api_view(['GET'])
+def add_community_from_browser(request, user_id, name, description):
+    community = Community.objects.create(
+        name=name, description=description
+    )
+    return Response(community_to_json(community.community_id, user_id), status=status.HTTP_200_OK)
