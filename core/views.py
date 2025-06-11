@@ -259,7 +259,8 @@ def add_community(request, user_id):
             CommunityMember.objects.create(community=community, user=user.first())
 
     user = UserTable.objects.get(user_id=user_id)
-    CommunityMember.objects.create(community=community, user=user)
+    if not CommunityMember.objects.filter(community=community, user=user).exists():
+        CommunityMember.objects.create(community=community, user=user)
 
     return Response({"message": "Community created", "community_id": community.community_id}, status=status.HTTP_201_CREATED)
 
