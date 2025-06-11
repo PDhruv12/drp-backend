@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timezone
 from django.forms import model_to_dict
 from django.http import JsonResponse
 from rest_framework.decorators import api_view
@@ -176,8 +176,17 @@ def event_to_json(event_id, user_id):
             model_to_dict(cohost_entry.host, fields=['user_id', 'name', 'date_of_birth', 'description']) 
             for cohost_entry in cohosts]
 
-    end_datetime = datetime.combine(event.date, event.end_time).replace(second=0, microsecond=0)
-    if end_datetime <= (datetime.now().replace(second=0, microsecond=0) - timedelta(hours=1)):
+    now = timezone.localtime(timezone.now()).replace(second=0, microsecond=0)
+    # Combine event date and end time, then make it aware using London time
+    event_end_naive = datetime.combine(event.date, event.end_time).replace(second=0, microsecond=0)
+    # Make aware only if needed
+    if timezone.is_naive(event_end_naive):
+        event_end_aware = timezone.make_aware(event_end_naive, timezone.get_default_timezone())
+    else:
+        event_end_aware = event_end_naive
+
+    # Compare
+    if event_end_aware <= now:
         event.over = True
         event.save()
 
