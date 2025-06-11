@@ -1,4 +1,3 @@
-from datetime import time
 import random
 from django.db import models
 
@@ -83,6 +82,27 @@ class CommunityMember(models.Model):
 
     class Meta:
         unique_together = ('community', 'user')
+
+class CommunityMessage(models.Model):
+    TEXT = 'text'
+    EVENT = 'event'
+
+    MESSAGE_TYPE_CHOICES = [
+        (TEXT, 'Text'),
+        (EVENT, 'Event'),
+    ]
+
+    message_id = models.AutoField(primary_key=True)
+    community = models.ForeignKey(Community, on_delete=models.CASCADE, related_name='messages')
+    sender = models.ForeignKey(UserTable, on_delete=models.CASCADE)
+    timestamp = models.DateTimeField(auto_now_add=True)
+    
+    message_type = models.CharField(max_length=10, choices=MESSAGE_TYPE_CHOICES, default=TEXT)
+    text = models.TextField(blank=True, null=True)  # For text content (image is url so text)
+    event = models.ForeignKey(EventTable, on_delete=models.SET_NULL, null=True, blank=True)  # For event shares
+
+    class Meta:
+        ordering = ['timestamp']
 
 # --- Bookmarks Table ---
 # class Bookmark(models.Model):

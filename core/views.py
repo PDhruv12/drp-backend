@@ -4,7 +4,8 @@ from django.http import JsonResponse
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
-from .models import EventTable, UserTable, EventImage, Attendee, Tag, Cohost, Community, CommunityImage, CommunityTag, CommunityMember
+from .models import EventTable, UserTable, EventImage, Attendee, Tag, Cohost
+from .models import Community, CommunityImage, CommunityTag, CommunityMember, CommunityMessage
 from .serializers import UserSerializer, EventImageSerializer, TagsSerializer
 
 import logging
@@ -202,22 +203,6 @@ def event_to_json(event_id, user_id):
         "over": event.over,
     }
 
-# def search_events(request, user_id):
-#     data = request.data
-#     search_items = str(data.get('search')).split()
-#     records = EventTable.objects.all()
-#     combined_data = []
-#     for event in records:
-#         tags = Tag.objects.filter(event=event)
-#         for item in search_items:
-#             item_lower = item.lower()
-#             if (item_lower in event.title.lower() or
-#                 item_lower in event.description.lower() or
-#                 any(item_lower in tag.tag_name.lower() for tag in tags)):
-#                     combined_data.append(event_to_json(event.event_id, user_id))
-#                     break
-#     return Response(combined_data, status=status.HTTP_200_OK)
-
 # ____________________________________________________________________________________________
 
 @api_view(['DELETE', 'GET'])
@@ -281,7 +266,7 @@ def get_commutities(request, user_id):
     return Response(combined_data, status=status.HTTP_200_OK)
 
 @api_view(['GET'])
-def get_your_commutities(request, user_id):
+def get_my_commutities(request, user_id):
     combined_data = []
     user = UserTable.objects.get(user_id=user_id)
     communities = CommunityMember.objects.filter(user=user)
@@ -319,4 +304,64 @@ def community_to_json(community_id, user_id):
         "tags": tag,
         "image": img,
         "members": member,
+    }
+
+# ____________________________________________________________________________________________________________
+
+@api_view(['GET'])
+def get_messages(request, user_id):
+    data = request.data
+    community_id = data.get('community')
+    community = Community.objects.get(community_id=community_id)
+    combined_data = []
+    for message in CommunityMessage.objects.filter(community=community):
+        combined_data.append(message_to_json(message.message_id, user_id))
+    return Response(combined_data, status=status.HTTP_200_OK)
+
+@api_view(['POST'])
+def send_message(request, user_id):
+    data = request.data
+    community_id = data.get('community')
+    community = Community.objects.get(community_id=community_id)
+    sender = UserTable.objects.get(user_id=user_id)
+    message_type = data.get('message_type')
+    text = data.get('text')
+    event_id = data.get('event')
+    if message_type == 'text':
+        message = CommunityMessage.objects.create(
+            community = community,
+            sender = sender,
+            message_type = message_type,
+            text = text,
+        )
+    elif message_type == 'event':
+        event = EventTable.objects.get(event_id=event_id)
+        message = CommunityMessage.objects.create(
+            community = community,
+            sender = sender,
+            message_type = message_type,
+            event = event,
+        )
+    return Response(message_to_json(message.message_id, user_id), status=status.HTTP_201_CREATED)
+
+
+def message_to_json(message_id, user_id):
+    message = CommunityMessage.objects.get(message_id=message_id)
+    event = ""
+    text = ""
+
+    if message.message_type == 'event': 
+        event = event_to_json(message.event.event_id, user_id)
+    elif message.message_type == 'text':
+        text = message.text
+        
+
+    return {
+        "message_id": message.message_id,
+        'sender': model_to_dict(message.sender, fields=['user_id', 'name', 'date_of_birth', 'description']),
+        'message_type': message.message_type,
+        'text': text,
+        'event': event, 
+        "date": message.timestamp.strftime('%d %B, %Y'),
+        "time": message.timestamp.strftime('%-I:%M %p'),
     }

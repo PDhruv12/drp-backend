@@ -41,6 +41,11 @@ urlpatterns = [
     path('<user_id>/event/<int:event_id>/signup/', views.event_sign_up, name='signup'),
     path('<user_id>/event/create/', views.add_event, name='add_event'),
     path('<user_id>/event/create', views.add_event, name='add_event'),
+    path('<user_id>/community/add/', views.add_community, name='add-community'),
+    path('<user_id>/my-communities/', views.get_my_commutities, name='my-communities'),
+    path('<user_id>/communities/all/', views.get_commutities, name='communities'),
+    path('<user_id>/community/messages/get', views.get_messages, name='community messages'),
+    path('<user_id>/community/message/send', views.send_message, name='send message'),
 
     path('user-login/', views.login, name="logins user"),
     path('user-create/', views.add_user, name='adds user'),
@@ -50,5 +55,5 @@ urlpatterns = [
     path('delete/<int:event_id>/', views.delete_particular_event),
     path('images-view', views.view_images),
     path('tags', views.getTags),
-    path('<user_id>/event-all/', views.get_events_all, name='all events')
+    path('<user_id>/event-all/', views.get_events_all, name='all events'),
 ]
