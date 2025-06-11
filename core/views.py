@@ -308,7 +308,7 @@ def community_to_json(community_id, user_id):
 
 # ____________________________________________________________________________________________________________
 
-@api_view(['GET'])
+@api_view(['GET', 'POST'])
 def get_messages(request, user_id):
     data = request.data
     community_id = data.get('community')
