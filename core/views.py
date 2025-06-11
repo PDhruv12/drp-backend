@@ -290,12 +290,12 @@ def community_to_json(community_id, user_id):
     else:
         tag = [tag_entry.tag_name for tag_entry in tags]
     
-    if not members.exists():
-        member = []
-    else:
-        member = [
-            model_to_dict(member_entry.user, fields=['user_id', 'name', 'date_of_birth', 'description']) 
-            for member_entry in members]
+    member = []
+    if members.exists():
+        for member_entry in members:
+            user_dict = model_to_dict(member_entry.user, fields=['name', 'date_of_birth', 'description'])
+            user_dict['user_id'] = member_entry.user.user_id
+            member.append(user_dict)
 
     return {
         "id": community.community_id,
@@ -355,10 +355,11 @@ def message_to_json(message_id, user_id):
     elif message.message_type == 'text':
         text = message.text
         
-
+    sender_data = model_to_dict(message.sender, fields=['name'])
+    sender_data['user_id'] = message.sender.user_id
     return {
         "message_id": message.message_id,
-        'sender': model_to_dict(message.sender, fields=['user_id', 'name']),
+        'sender': sender_data,
         'message_type': message.message_type,
         'text': text,
         'event': event, 
