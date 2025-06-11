@@ -1,4 +1,5 @@
-from datetime import datetime, timezone
+from datetime import datetime
+from django.utils import timezone
 from django.forms import model_to_dict
 from django.http import JsonResponse
 from rest_framework.decorators import api_view
