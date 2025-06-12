@@ -380,15 +380,17 @@ def message_to_json(message_id, user_id):
     for image in images:
         img.append(image.image)
 
-    sender_data = model_to_dict(message.sender, fields=['name'])
-    sender_data['user_id'] = message.sender.user_id
+    sender_data = {
+        "name": message.sender.name,
+        "user_id": message.sender.user_id
+    }
     return {
         "message_id": message.message_id,
-        'sender': sender_data,
-        'message_type': message.message_type,
-        'text': text,
-        'event': event, 
-        'image': img,
+        "sender": sender_data,
+        "message_type": message.message_type,
+        "text": text,
+        "event": event, 
+        "image": img,
         "date": message.timestamp.strftime('%d %B, %Y'),
         "time": message.timestamp.strftime('%-I:%M %p'),
     }
