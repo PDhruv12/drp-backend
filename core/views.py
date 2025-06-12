@@ -6,7 +6,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 from .models import EventTable, UserTable, EventImage, Attendee, Tag, Cohost
-from .models import Community, CommunityImage, CommunityTag, CommunityMember, CommunityMessage
+from .models import Community, CommunityImage, CommunityTag, CommunityMember, CommunityMessage, CommunityMessageImage
 from .serializers import UserSerializer, EventImageSerializer, TagsSerializer
 
 import logging
@@ -341,6 +341,7 @@ def send_message(request, user_id):
     message_type = data.get('message_type')
     text = data.get('text')
     event_id = data.get('event')
+    images = data.get('image', [])
     if message_type == 'text':
         message = CommunityMessage.objects.create(
             community = community,
@@ -356,6 +357,12 @@ def send_message(request, user_id):
             message_type = message_type,
             event = event,
         )
+    else:
+        return Response({}, status=status.HTTP_400_BAD_REQUEST)
+    
+    for image in images:
+        CommunityMessageImage.objects.create(image=image, message=message)
+    
     return Response(message_to_json(message.message_id, user_id), status=status.HTTP_201_CREATED)
 
 
@@ -363,12 +370,16 @@ def message_to_json(message_id, user_id):
     message = CommunityMessage.objects.get(message_id=message_id)
     event = ""
     text = ""
-
+    images = CommunityMessageImage.objects.filter(message=message)
     if message.message_type == 'event': 
         event = event_to_json(message.event.event_id, user_id)
     elif message.message_type == 'text':
         text = message.text
-        
+    
+    img = []
+    for image in images:
+        img.append(image.image)
+
     sender_data = model_to_dict(message.sender, fields=['name'])
     sender_data['user_id'] = message.sender.user_id
     return {
@@ -377,6 +388,7 @@ def message_to_json(message_id, user_id):
         'message_type': message.message_type,
         'text': text,
         'event': event, 
+        'image': img,
         "date": message.timestamp.strftime('%d %B, %Y'),
         "time": message.timestamp.strftime('%-I:%M %p'),
     }

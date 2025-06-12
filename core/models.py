@@ -104,6 +104,11 @@ class CommunityMessage(models.Model):
     class Meta:
         ordering = ['timestamp']
 
+class CommunityMessageImage(models.Model):
+    image_id = models.AutoField(primary_key=True)
+    image = models.TextField()
+    message = models.ForeignKey(CommunityMessage, on_delete=models.CASCADE, unique=False)
+
 # --- Bookmarks Table ---
 # class Bookmark(models.Model):
 #     event_id = models.ForeignKey(EventTable, on_delete=models.CASCADE, unique=False)
