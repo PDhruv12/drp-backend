@@ -407,3 +407,7 @@ def make_member(request, user_id, community_id):
     if not CommunityMember.objects.filter(community=community, user=user).exists():
         CommunityMember.objects.create(community=community, user=user)
     return Response({"message": "Community member"}, status=status.HTTP_201_CREATED)
+
+@api_view(['GET'])
+def delete_community(request, community_id):
+    Community.objects.get(community_id=community_id).delete()
