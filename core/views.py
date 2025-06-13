@@ -393,6 +393,8 @@ def message_to_json(message_id, user_id):
         "image": img,
         "date": message.timestamp.strftime('%d %B, %Y'),
         "time": message.timestamp.strftime('%-I:%M %p'),
+        "user": message.sender.user_id,
+        "name": message.sender.name,
     }
 
 @api_view(['GET'])
