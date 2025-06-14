@@ -288,6 +288,9 @@ def get_my_communities(request, user_id):
             combined_data.append(community_to_json(community.community_id, user_id))
     return Response(combined_data, status=status.HTTP_200_OK)
 
+def get_particular_community(request, user_id, community_id):
+    return Response(community_to_json(community_id, user_id), status=status.HTTP_200_OK)
+
 def community_to_json(community_id, user_id):
     community = Community.objects.get(community_id=community_id)
     image_obj = CommunityImage.objects.filter(community=community)
