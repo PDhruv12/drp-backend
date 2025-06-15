@@ -292,6 +292,7 @@ def get_my_communities(request, user_id):
             combined_data.append(community_to_json(community.community_id, user_id))
     return Response(combined_data, status=status.HTTP_200_OK)
 
+@api_view(['GET', 'POST'])
 def get_particular_community(request, user_id, community_id):
     return Response(community_to_json(community_id, user_id), status=status.HTTP_200_OK)
 
@@ -438,6 +439,7 @@ def make_member(request, user_id, community_id):
 @api_view(['GET'])
 def delete_community(request, community_id):
     Community.objects.get(community_id=community_id).delete()
+    return Response({'message': 'Community deleted successfully.'}, status=status.HTTP_200_OK)
 
 #___________________________________USER MSG__________________________________
 
