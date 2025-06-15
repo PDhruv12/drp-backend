@@ -109,10 +109,29 @@ class CommunityMessageImage(models.Model):
     image = models.TextField()
     message = models.ForeignKey(CommunityMessage, on_delete=models.CASCADE, unique=False)
 
-# --- Bookmarks Table ---
-# class Bookmark(models.Model):
-#     event_id = models.ForeignKey(EventTable, on_delete=models.CASCADE, unique=False)
-#     user_id = models.ForeignKey(User, on_delete=models.CASCADE, unique=False)
+class UsersMessage(models.Model):
+    TEXT = 'text'
+    EVENT = 'event'
 
-#     class Meta:
-#         unique_together = ('event_id', 'user_id')
+    MESSAGE_TYPE_CHOICES = [
+        (TEXT, 'Text'),
+        (EVENT, 'Event'),
+    ]
+
+    message_id = models.AutoField(primary_key=True)
+    sender = models.ForeignKey(UserTable, on_delete=models.CASCADE, related_name='sent_messages')
+    receiver = models.ForeignKey(UserTable, on_delete=models.CASCADE, related_name='received_messages')
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    message_type = models.CharField(max_length=10, choices=MESSAGE_TYPE_CHOICES, default=TEXT)
+    text = models.TextField(blank=True, null=True) 
+    event = models.ForeignKey(EventTable, on_delete=models.SET_NULL, null=True, blank=True)
+
+    class Meta:
+        ordering = ['timestamp']
+
+class UsersMessageImage(models.Model):
+    image_id = models.AutoField(primary_key=True)
+    image = models.TextField()
+    message = models.ForeignKey(UsersMessage, on_delete=models.CASCADE, related_name='images')
+

@@ -35,12 +35,15 @@ from django.urls import path
 import core.views as views
 
 urlpatterns = [
+    #_______________________________________________________________________________
     path('admin/', admin.site.urls),
     path('<user_id>/events/', views.get_events, name='events'), # List of events for each user
     path('<user_id>/event/<int:event_id>/', views.get_event, name='event_specific'),
     path('<user_id>/event/<int:event_id>/signup/', views.event_sign_up, name='signup'),
     path('<user_id>/event/create/', views.add_event, name='add_event'),
     path('<user_id>/event/create', views.add_event, name='add_event'),
+
+    #_______________________________________________________________________________
     path('<user_id>/community/add/', views.add_community, name='add-community'),
     path('<user_id>/my-communities/', views.get_my_communities, name='my-communities'),
     path('<user_id>/communities/all/', views.get_communities, name='communities'),
@@ -48,10 +51,16 @@ urlpatterns = [
     path('<user_id>/community/message/send', views.send_message, name='send message'),
     path('<user_id>/community/<community_id>', views.get_particular_community, name="community"),
 
+    #_______________________________________________________________________________
+    path('<user_id>/usermessage/', views.user_messages, name='User message'),
+    path('<user_id>/usermessage/send/', views.send_user_message, name="send user msg"),
+
+    #_______________________________________________________________________________
     path('user-login/', views.login, name="logins user"),
     path('user-create/', views.add_user, name='adds user'),
     path('user-view', views.users, name='users'),
     
+    #_______________________________________________________________________________
     path('delete-all/', views.delete_all_events, name='delete-all'),
     path('delete/<int:event_id>/', views.delete_particular_event),
     path('images-view', views.view_images),

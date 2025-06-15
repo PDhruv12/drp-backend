@@ -7,7 +7,9 @@ from rest_framework.response import Response
 from rest_framework import status
 from .models import EventTable, UserTable, EventImage, Attendee, Tag, Cohost
 from .models import Community, CommunityImage, CommunityTag, CommunityMember, CommunityMessage, CommunityMessageImage
+from .models import UsersMessage, UsersMessageImage
 from .serializers import UserSerializer, EventImageSerializer, TagsSerializer
+from django.db.models import Q
 
 import logging
 logger = logging.getLogger(__name__)
@@ -418,3 +420,89 @@ def make_member(request, user_id, community_id):
 @api_view(['GET'])
 def delete_community(request, community_id):
     Community.objects.get(community_id=community_id).delete()
+
+#___________________________________USER MSG__________________________________
+
+@api_view(['POST'])
+def send_user_message(request, user_id):
+    data=request.data
+    sender = UserTable.objects.get(user_id=user_id)
+    receiver_id = data.get('receiver')
+    receiver = UserTable.objects.get(user_id=receiver_id)
+    message_type = data.get('message_type')
+    text = data.get('text')
+    event_id = data.get('event')
+    images = data.get('image', [])
+
+    if message_type == 'text':
+        message = UsersMessage.objects.create(
+            sender=sender,
+            receiver=receiver,
+            message_type=message_type,
+            text=text
+        )
+    elif message_type == 'event':
+        event = EventTable.objects.get(event_id=event_id)
+        message = CommunityMessage.objects.create(
+            sender=sender,
+            receiver=receiver,
+            message_type=message_type,
+            event=event
+        )
+    else:
+        return Response({}, status=status.HTTP_400_BAD_REQUEST)
+    
+    for image in images:
+        UsersMessageImage.objects.create(image=image, message=message)
+    
+    return Response(user_message_to_json(message.message_id, user_id), status=status.HTTP_201_CREATED)
+
+@api_view(['GET', 'POST'])
+def user_messages(request, user_id):
+    data = request.data
+    user2_id = data.get('other_user')
+    user = UserTable.objects.get(user_id=user_id)
+    user2 = UserTable.objects.get(user2_id=user2_id)
+    messages = UsersMessage.objects.filter(
+            Q(sender=user, receiver=user2) |
+            Q(sender=user2, receiver=user)
+        ).order_by('timestamp')
+    
+    combined_data = []
+    for message in messages:
+        combined_data.append(user_message_to_json(message.message_id, user_id))
+    return 
+
+def user_message_to_json(message_id, user_id):
+    message = UsersMessage.objects.get(message_id=message_id)
+    event = ""
+    text = ""
+    images = UsersMessageImage.objects.filter(message=message)
+    if message.message_type == 'event': 
+        event = event_to_json(message.event.event_id, user_id)
+    elif message.message_type == 'text':
+        text = message.text
+    
+    img = []
+    for image in images:
+        img.append(image.image)
+
+    sender_data = {
+        "name": message.sender.name,
+        "user_id": message.sender.user_id
+    }
+    receiver_data = {
+        "name": message.receiver.name,
+        "user_id": message.receiver.user_id
+    }
+    return {
+        "message_id": message.message_id,
+        "sender": sender_data,
+        "receiver": receiver_data,
+        "message_type": message.message_type,
+        "text": text,
+        "event": event, 
+        "image": img,
+        "date": message.timestamp.strftime('%d %B, %Y'),
+        "time": message.timestamp.strftime('%-I:%M %p'),
+    }
