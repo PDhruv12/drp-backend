@@ -377,6 +377,7 @@ def send_message(request, user_id):
                 receiver=user,
                 notification_type="community_message",
                 community=community,
+                sender=sender
             )
     
     return Response(message_to_json(message.message_id, user_id), status=status.HTTP_201_CREATED)
@@ -388,7 +389,8 @@ def message_to_json(message_id, user_id):
     text = ""
     images = CommunityMessageImage.objects.filter(message=message)
     if message.message_type == 'event': 
-        event = event_to_json(message.event.event_id, user_id)
+        if message.event:
+            event = event_to_json(message.event.event_id, user_id)
     elif message.message_type == 'text':
         text = message.text
     
