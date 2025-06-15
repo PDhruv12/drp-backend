@@ -464,7 +464,7 @@ def user_messages(request, user_id):
     data = request.data
     user2_id = data.get('other_user')
     user = UserTable.objects.get(user_id=user_id)
-    user2 = UserTable.objects.get(user2_id=user2_id)
+    user2 = UserTable.objects.get(user_id=user2_id)
     messages = UsersMessage.objects.filter(
             Q(sender=user, receiver=user2) |
             Q(sender=user2, receiver=user)
