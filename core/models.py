@@ -135,3 +135,34 @@ class UsersMessageImage(models.Model):
     image = models.TextField()
     message = models.ForeignKey(UsersMessage, on_delete=models.CASCADE, related_name='images')
 
+class Notification(models.Model):
+    SAY_HI = 'say_hi'
+    JOINED_COMMUNITY = 'joined_community'
+    DM_MESSAGE = 'dm_message'
+    COMMUNITY_MESSAGE = 'community_message'
+
+    NOTIFICATION_TYPE_CHOICES = [
+        (SAY_HI, 'Say Hi'),
+        (JOINED_COMMUNITY, 'Joined Community'),
+        (DM_MESSAGE, 'Direct Message'),
+        (COMMUNITY_MESSAGE, 'Community Message'),
+    ]
+
+    notification_id = models.AutoField(primary_key=True)
+    receiver = models.ForeignKey(UserTable, on_delete=models.CASCADE, related_name='notifications')
+    sender = models.ForeignKey(UserTable, on_delete=models.SET_NULL, null=True, blank=True, related_name='sent_notifications')
+
+    notification_type = models.CharField(max_length=20, choices=NOTIFICATION_TYPE_CHOICES)
+
+    # Optional foreign keys to related objects depending on type
+    community = models.ForeignKey(Community, on_delete=models.SET_NULL, null=True, blank=True)
+    timestamp = models.DateTimeField(auto_now_add=True)
+    read = models.BooleanField(default=False)
+
+    class Meta:
+        ordering = ['-timestamp']
+
+    def __str__(self):
+        return f"{self.notification_type} -> {self.receiver.name}"
+
+# say hi, joined in community, message dm, message in community

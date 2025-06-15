@@ -54,6 +54,7 @@ urlpatterns = [
     #_______________________________________________________________________________
     path('<user_id>/usermessage/', views.user_messages, name='User message'),
     path('<user_id>/usermessage/send/', views.send_user_message, name="send user msg"),
+    path('<user_id>/say-hi/', views.say_hi, name="say-hi"),
 
     #_______________________________________________________________________________
     path('user-login/', views.login, name="logins user"),

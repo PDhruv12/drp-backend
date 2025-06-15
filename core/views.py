@@ -7,7 +7,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from .models import EventTable, UserTable, EventImage, Attendee, Tag, Cohost
 from .models import Community, CommunityImage, CommunityTag, CommunityMember, CommunityMessage, CommunityMessageImage
-from .models import UsersMessage, UsersMessageImage
+from .models import UsersMessage, UsersMessageImage, Notification
 from .serializers import UserSerializer, EventImageSerializer, TagsSerializer
 from django.db.models import Q
 
@@ -370,13 +370,13 @@ def send_message(request, user_id):
     for image in images:
         CommunityMessageImage.objects.create(image=image, message=message)
 
-    # for user in CommunityMember.objects.filter(community=community):
-    #     if (user != sender):
-    #         Notification.objects.create(
-    #             receiver=user,
-    #             notification_type="Community Message",
-    #             community=community,
-    #         )
+    for user in CommunityMember.objects.filter(community=community):
+        if (user != sender):
+            Notification.objects.create(
+                receiver=user,
+                notification_type="Community Message",
+                community=community,
+            )
     
     return Response(message_to_json(message.message_id, user_id), status=status.HTTP_201_CREATED)
 
@@ -425,14 +425,14 @@ def make_member(request, user_id, community_id):
     community = Community.objects.get(community_id=community_id)
     if not CommunityMember.objects.filter(community=community, user=user).exists():
         CommunityMember.objects.create(community=community, user=user)
-        # for member in CommunityMember.objects.filter(community=community):
-        #     if (member != user):
-        #         Notification.objects.create(
-        #             receiver=member,
-        #             notification_type="Joined Community",
-        #             community=community,
-        #             sender=user,
-        #         )
+        for member in CommunityMember.objects.filter(community=community):
+            if (member != user):
+                Notification.objects.create(
+                    receiver=member,
+                    notification_type="Joined Community",
+                    community=community,
+                    sender=user,
+                )
     return Response({"message": "Community member"}, status=status.HTTP_201_CREATED)
 
 @api_view(['GET'])
@@ -473,11 +473,11 @@ def send_user_message(request, user_id):
     for image in images:
         UsersMessageImage.objects.create(image=image, message=message)
 
-    # Notification.objects.create(
-    #     receiver=receiver,
-    #     notification_type="Direct Message",
-    #     sender=sender
-    # )
+    Notification.objects.create(
+        receiver=receiver,
+        notification_type="Direct Message",
+        sender=sender
+    )
     
     return Response(user_message_to_json(message.message_id, user_id), status=status.HTTP_201_CREATED)
 
@@ -531,4 +531,15 @@ def user_message_to_json(message_id, user_id):
         "time": message.timestamp.strftime('%-I:%M %p'),
     }
 
-# def view
+@api_view(['POST'])
+def say_hi(request, user_id):
+    data=request.data
+    hi_to=data.get('hi_to')
+    sender=UserTable.objects.get(user_id=user_id)
+    receiver=UserTable.objects.get(user_id=hi_to)
+    Notification.objects.create(
+        receiver=receiver,
+        sender=sender,
+        notification_type='Say Hi'  
+    )
+    return Response({"message created"}, status=status.HTTP_201_CREATED)
