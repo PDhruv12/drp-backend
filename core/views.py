@@ -374,7 +374,7 @@ def send_message(request, user_id):
     for user in CommunityMember.objects.filter(community=community):
         if (user != sender):
             Notification.objects.create(
-                receiver=user,
+                receiver=user.user,
                 notification_type="community_message",
                 community=community,
                 sender=sender
