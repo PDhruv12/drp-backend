@@ -369,6 +369,14 @@ def send_message(request, user_id):
     
     for image in images:
         CommunityMessageImage.objects.create(image=image, message=message)
+
+    # for user in CommunityMember.objects.filter(community=community):
+    #     if (user != sender):
+    #         Notification.objects.create(
+    #             receiver=user,
+    #             notification_type="Community Message",
+    #             community=community,
+    #         )
     
     return Response(message_to_json(message.message_id, user_id), status=status.HTTP_201_CREATED)
 
@@ -456,13 +464,19 @@ def send_user_message(request, user_id):
     
     for image in images:
         UsersMessageImage.objects.create(image=image, message=message)
+
+    # Notification.objects.create(
+    #     receiver=receiver,
+    #     notification_type="Direct Message",
+    #     sender=sender
+    # )
     
     return Response(user_message_to_json(message.message_id, user_id), status=status.HTTP_201_CREATED)
 
 @api_view(['GET', 'POST'])
 def user_messages(request, user_id):
     data = request.data
-    user2_id = data.get('other_user')
+    user2_id = data.get('chat_with')
     user = UserTable.objects.get(user_id=user_id)
     user2 = UserTable.objects.get(user_id=user2_id)
     messages = UsersMessage.objects.filter(
@@ -473,7 +487,7 @@ def user_messages(request, user_id):
     combined_data = []
     for message in messages:
         combined_data.append(user_message_to_json(message.message_id, user_id))
-    return 
+    return Response(combined_data, status=status.HTTP_200_OK)
 
 def user_message_to_json(message_id, user_id):
     message = UsersMessage.objects.get(message_id=message_id)
