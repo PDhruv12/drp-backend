@@ -372,7 +372,7 @@ def send_message(request, user_id):
         CommunityMessageImage.objects.create(image=image, message=message)
 
     for user in CommunityMember.objects.filter(community=community):
-        if (user != sender):
+        if (user.user != sender):
             Notification.objects.create(
                 receiver=user.user,
                 notification_type="community_message",
@@ -429,7 +429,7 @@ def make_member(request, user_id, community_id):
     if not CommunityMember.objects.filter(community=community, user=user).exists():
         CommunityMember.objects.create(community=community, user=user)
         for member in CommunityMember.objects.filter(community=community):
-            if (member != user):
+            if (member.user != user):
                 Notification.objects.create(
                     receiver=member.user,
                     notification_type=" joined_community",
