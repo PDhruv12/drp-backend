@@ -296,6 +296,13 @@ def get_my_communities(request, user_id):
 def get_particular_community(request, user_id, community_id):
     return Response(community_to_json(community_id, user_id), status=status.HTTP_200_OK)
 
+@api_view(['GET', 'POST'])
+def leave_community(request, user_id, community_id):
+    community = Community.objects.get(community_id=community_id)
+    user = UserTable.objects.get(user_id=user_id)
+    CommunityMember.objects.get(community=community, user=user).delete()
+    return Response({"message:", "Left community"}, status=status.HTTP_200_OK)
+
 def community_to_json(community_id, user_id):
     community = Community.objects.get(community_id=community_id)
     image_obj = CommunityImage.objects.filter(community=community)

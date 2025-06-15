@@ -50,6 +50,7 @@ urlpatterns = [
     path('<user_id>/community/messages/get', views.get_messages, name='community messages'),
     path('<user_id>/community/message/send', views.send_message, name='send message'),
     path('<user_id>/community/<community_id>', views.get_particular_community, name="community"),
+    path('<user_id>/leave/community/<community_id>/', views.leave_community, name="leave community"),
 
     #_______________________________________________________________________________
     path('<user_id>/usermessage/', views.user_messages, name='User message'),
