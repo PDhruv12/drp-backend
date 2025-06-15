@@ -71,5 +71,5 @@ urlpatterns = [
     path('<user_id>/event-all/', views.get_events_all, name='all events'),
     path('add/<user_id>/<name>/<description>', views.add_community_from_browser),
     path('addmember/<user_id>/<community_id>', views.make_member),
-    path('delete/community/<community_id>', views.delete_community),
+    path('remove/delete/community/<community_id>', views.delete_community),
 ]
