@@ -425,6 +425,14 @@ def make_member(request, user_id, community_id):
     community = Community.objects.get(community_id=community_id)
     if not CommunityMember.objects.filter(community=community, user=user).exists():
         CommunityMember.objects.create(community=community, user=user)
+        # for member in CommunityMember.objects.filter(community=community):
+        #     if (member != user):
+        #         Notification.objects.create(
+        #             receiver=member,
+        #             notification_type="Joined Community",
+        #             community=community,
+        #             sender=user,
+        #         )
     return Response({"message": "Community member"}, status=status.HTTP_201_CREATED)
 
 @api_view(['GET'])
@@ -453,7 +461,7 @@ def send_user_message(request, user_id):
         )
     elif message_type == 'event':
         event = EventTable.objects.get(event_id=event_id)
-        message = CommunityMessage.objects.create(
+        message = UsersMessage.objects.create(
             sender=sender,
             receiver=receiver,
             message_type=message_type,
@@ -522,3 +530,5 @@ def user_message_to_json(message_id, user_id):
         "date": message.timestamp.strftime('%d %B, %Y'),
         "time": message.timestamp.strftime('%-I:%M %p'),
     }
+
+# def view
