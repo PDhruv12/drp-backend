@@ -543,3 +543,9 @@ def say_hi(request, user_id):
         notification_type='Say Hi'  
     )
     return Response({"message created"}, status=status.HTTP_201_CREATED)
+
+@api_view(['GET'])
+def clear_all(request, user_id):
+    user = UserTable.objects.get(user_id=user_id)
+    notifs = Notification.objects.filter(receiver=user_id).delete()
+    return Response({'message': 'All notifications cleared.'}, status=status.HTTP_200_OK)
