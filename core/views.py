@@ -156,7 +156,7 @@ def login(request):
 def event_to_json(event_id, user_id):
     event = EventTable.objects.get(event_id = event_id)
     image_obj = EventImage.objects.filter(event = event.event_id)
-    host_info = UserTable.objects.get(user_id = event.host_id.user_id).name
+    host_info = UserTable.objects.get(user_id = event.host_id.user_id)
     attendees = Attendee.objects.filter(event = event.event_id)
     accepted = attendees.filter(user = user_id).exists()
     tags = Tag.objects.filter(event=event.event_id)
@@ -193,13 +193,15 @@ def event_to_json(event_id, user_id):
         event.over = True
         event.save()
 
+
     return {
         "id": event.event_id,
         "title": event.title,
         "image": img,
         "description": event.description,
         "location": event.location,
-        "host": host_info,
+        "host": host_info.name,
+        "host_id": host_info.user_id,
         "cohost": cohost,
         "tags": tag,
         "signups": attendees.count(),
