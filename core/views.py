@@ -374,7 +374,7 @@ def send_message(request, user_id):
         if (user != sender):
             Notification.objects.create(
                 receiver=user,
-                notification_type="Community Message",
+                notification_type="community_message",
                 community=community,
             )
     
@@ -429,7 +429,7 @@ def make_member(request, user_id, community_id):
             if (member != user):
                 Notification.objects.create(
                     receiver=member,
-                    notification_type="Joined Community",
+                    notification_type=" joined_community",
                     community=community,
                     sender=user,
                 )
@@ -475,7 +475,7 @@ def send_user_message(request, user_id):
 
     Notification.objects.create(
         receiver=receiver,
-        notification_type="Direct Message",
+        notification_type="dm_message",
         sender=sender
     )
     
@@ -537,15 +537,57 @@ def say_hi(request, user_id):
     hi_to=data.get('hi_to')
     sender=UserTable.objects.get(user_id=user_id)
     receiver=UserTable.objects.get(user_id=hi_to)
-    Notification.objects.create(
-        receiver=receiver,
-        sender=sender,
-        notification_type='Say Hi'  
-    )
+    if not Notification.objects.filter(receiver=receiver, sender=sender, notification_type='Say Hi').exists():
+        Notification.objects.create(
+            receiver=receiver,
+            sender=sender,
+            notification_type='say_hi'  
+        )
     return Response({"message created"}, status=status.HTTP_201_CREATED)
 
 @api_view(['GET'])
 def clear_all(request, user_id):
     user = UserTable.objects.get(user_id=user_id)
-    notifs = Notification.objects.filter(receiver=user_id).delete()
+    notifs = Notification.objects.filter(receiver=user).delete()
     return Response({'message': 'All notifications cleared.'}, status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+def get_notifs(request, user_id):
+    user=UserTable.objects.get(user_id=user_id)
+    notifs = Notification.objects.filter(receiver=user)
+    combined_data=[]
+    for notif in notifs:
+         combined_data.append(notif_to_json(notif.notification_id, user_id))
+    return Response(combined_data, status=status.HTTP_200_OK)
+
+def notif_to_json(notif_id, receiver_id):
+    notif = Notification.objects.get(notification_id=notif_id)
+    receiver = UserTable.objects.get(user_id=receiver_id)
+    sender_data = None
+    community_data = None
+    receiver_data = {
+        "user_id": receiver.user_id,
+        "name": receiver.name
+    }
+
+    if notif.sender:
+        sender_data = {
+            "user_id": notif.sender.user_id,
+            "name": notif.sender.name
+        }
+
+    if notif.community:
+        community_data = {
+            "community_id": notif.community.community_id,
+            "name": notif.community.name
+        }
+
+    return {
+        "notification_id": notif.notification_id,
+        "notification_type": notif.notification_type,
+        "receiver": receiver_data,
+        "timestamp": notif.timestamp.strftime('%d %B, %Y %I:%M %p'),
+        "read": notif.read,
+        "sender": sender_data,
+        "community": community_data,
+    }
