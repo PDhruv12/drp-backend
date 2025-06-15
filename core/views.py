@@ -431,7 +431,7 @@ def make_member(request, user_id, community_id):
         for member in CommunityMember.objects.filter(community=community):
             if (member != user):
                 Notification.objects.create(
-                    receiver=member,
+                    receiver=member.user,
                     notification_type=" joined_community",
                     community=community,
                     sender=user,
@@ -595,3 +595,4 @@ def notif_to_json(notif_id, receiver_id):
         "sender": sender_data,
         "community": community_data,
     }
+
